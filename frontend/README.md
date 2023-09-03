@@ -1,3 +1,9 @@
+目前支持功能
+- 登录(账号:admin; 密码:admin)
+- 一个简单的图表,点击back 回到login(应该改成别的), 点击generate json会获得提示
+
+---
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
