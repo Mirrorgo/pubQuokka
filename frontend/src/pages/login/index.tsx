@@ -15,7 +15,8 @@ const Login: FC = () => {
     // console.log("Received values:", values);
     // TODO 转变成真正的登录逻辑
     if (values.username === "admin" && values.password === "admin") {
-      router.push("/home");
+      // router.push("/home");
+      router.push("/generateForm");
     }
   };
   return (
