@@ -145,7 +145,7 @@ function Home() {
                 </Space>
               )}
               <Divider />
-              {/* <Title level={5}>New Point</Title> */}
+              <Title level={5}>New Point</Title>
               <Input
                 addonBefore="x:"
                 type="number"
