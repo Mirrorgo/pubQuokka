@@ -115,12 +115,17 @@ const GenarateForm: FC = () => {
                   <Slider
                     marks={marks}
                     defaultValue={[90, 99]}
+                    range={{ draggableTrack: true }}
+                  ></Slider>
+                  {/* <Slider
+                    marks={marks}
+                    defaultValue={[90, 99]}
                     handleLineWidthHover={2}
                     handleLineWidth={1}
                     handleSize={6}
                     handleSizeHover={8}
                     range={{ draggableTrack: true }}
-                  ></Slider>
+                  ></Slider> */}
                   {/* <Slider
                     marks={marks}
                     defaultValue={[90, 99]}
