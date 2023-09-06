@@ -1,23 +1,41 @@
-import React, { useEffect, useRef } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 
-const DraggableLineChart: React.FC = () => {
+interface DraggableLineChartProps {
+  data: number[][]; // 所有data的值
+  setData: React.Dispatch<React.SetStateAction<number[][]>>;
+  editingDataIndex: number | null;
+  setEditingDataIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  editValue: number | null;
+  setEditValue: React.Dispatch<React.SetStateAction<number | null>>;
+}
+
+const DraggableLineChart: FC<DraggableLineChartProps> = ({
+  data,
+  setData,
+  editingDataIndex,
+  setEditingDataIndex,
+  editValue,
+  setEditValue,
+}) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (chartRef.current) {
       const myChart = echarts.init(chartRef.current);
+      const updateChart = (newData: [number, number][]) => {
+        if (myChart) {
+          const optionUpdate = {
+            series: [
+              {
+                data: newData,
+              },
+            ],
+          };
+          myChart.setOption(optionUpdate);
+        }
+      };
 
-      // 模拟一些数据
-      const data = [
-        [0, 10],
-        [1, 20],
-        [2, 30],
-        [3, 40],
-        [4, 50],
-      ];
-
-      // 创建初始的折线图
       const option = {
         xAxis: {
           type: "value",
@@ -52,20 +70,19 @@ const DraggableLineChart: React.FC = () => {
 
       myChart.setOption(option);
 
-      // 监听拖拽结束事件，更新数据
-      // myChart.on("dragend", (params: any) => {
-      //   const series = myChart.getOption().series[0];
-      //   const dataIndex = params.dataIndex;
-      //   const coordX = params.event.offsetX;
-      //   const coordY = params.event.offsetY;
-      //   const newValues = myChart.convertFromPixel("grid", [coordX, coordY]);
-      //   series.data[dataIndex] = newValues;
-      //   myChart.setOption({
-      //     series: [series],
-      //   });
-      // });
+      myChart.on("click", function (params) {
+        console.log(params, "params");
+        console.log(params.componentType, "type");
+        setEditingDataIndex(params.dataIndex);
+        setEditValue(data[params.dataIndex][1]);
+        // window.open('https://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+      });
+
+      return () => {
+        myChart.dispose();
+      };
     }
-  }, []);
+  }, [data, setEditValue, setEditingDataIndex]);
 
   return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
 };
