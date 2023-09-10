@@ -1,3 +1,4 @@
+"use client";
 import {
   Row,
   Image,
@@ -9,6 +10,7 @@ import {
   Slider,
   TimePicker,
   Button,
+  Space,
 } from "antd";
 import type { SliderMarks } from "antd/es/slider";
 import React, { FC, useState } from "react";
@@ -44,6 +46,9 @@ const GenarateForm: FC = () => {
   const [selectedValue, setSelectedValue] = useState<number>(1);
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
+  };
+  const handleGenerateBlank = () => {
+    console.log("generate blank");
   };
 
   const onSearch = (value: string) => {
@@ -156,13 +161,21 @@ const GenarateForm: FC = () => {
             </Form.Item>
             <Row justify="center">
               <Col>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ width: "100%" }}
-                >
-                  generate
-                </Button>
+                <Space>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    style={{ width: "100%" }}
+                  >
+                    generate
+                  </Button>
+                  <Button
+                    style={{ width: "100%" }}
+                    onClick={handleGenerateBlank}
+                  >
+                    generate blank
+                  </Button>
+                </Space>
               </Col>
             </Row>
           </Form>

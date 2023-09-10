@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect, useState } from "react";
 import DraggableLineChart from "./components/DraggableLineChart";
 import {
@@ -32,7 +33,7 @@ function Home() {
   const [addPointX, setAddPointX] = useState<number>(0);
   const [addPointY, setAddPointY] = useState<number>(0);
   const handleGoBack = useCallback(() => {
-    router.push("/login");
+    router.push("/generateForm");
   }, [router]);
 
   const handleGenerateJson = useCallback(() => {

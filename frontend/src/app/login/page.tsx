@@ -1,3 +1,4 @@
+"use client";
 import { Button, Checkbox, Col, Form, Image, Input, Row } from "antd";
 import React, { FC } from "react";
 import styles from "./index.module.scss";

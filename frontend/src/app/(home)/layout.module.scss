@@ -1,0 +1,29 @@
+.headerFont {
+	/* 选择合适的字体 */
+	font-family: 'Helvetica Neue', Arial, sans-serif;
+
+	/* 设置字体大小和行高 */
+	font-size: 26px;
+	line-height: 2.5;
+
+	/* 设置字体颜色 */
+	color: #333;
+
+	/* 设置字体加粗 */
+	font-weight: bold;
+
+	/* 添加文字阴影效果 */
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+
+	/* 设置文字居中 */
+	text-align: center;
+
+	/* 添加鼠标悬停效果 */
+	transition: color 0.3s ease-in-out;
+
+	/* 悬停时改变字体颜色 */
+	.nav-item:hover {
+		color: #007BFF;
+		/* 或者其他喜欢的颜色 */
+	}
+}
