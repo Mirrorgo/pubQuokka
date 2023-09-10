@@ -9,6 +9,8 @@ import {
   Slider,
   TimePicker,
   Button,
+  Tabs,
+  InputNumber,
 } from "antd";
 import type { SliderMarks } from "antd/es/slider";
 import React, { FC, useState } from "react";
@@ -35,6 +37,12 @@ const marks: SliderMarks = {
 const { RangePicker } = DatePicker;
 
 const dateFormat = "YYYY/MM/DD";
+
+const { TabPane } = Tabs;
+
+const callback = (key: string) => {
+  console.log(key);
+}
 
 const GenarateForm: FC = () => {
   const router = useRouter();
@@ -100,12 +108,6 @@ const GenarateForm: FC = () => {
                 ]}
               ></Select>
             </Form.Item>
-            <Form.Item label="Form Layout" name="layout">
-              <Radio.Group value={selectedValue}>
-                <Radio.Button value="horizontal">Time Range</Radio.Button>
-                <Radio.Button value="vertical">Point Num</Radio.Button>
-              </Radio.Group>
-            </Form.Item>
             <Form.Item
               label="Range:"
               style={{ position: "relative", padding: "0px 30px" }}
@@ -142,18 +144,51 @@ const GenarateForm: FC = () => {
                 </Col>
               </Row>
             </Form.Item>
-            <Form.Item label="Time Range:">
-              <RangePicker
-                defaultValue={[
-                  dayjs("2023/09/07", dateFormat),
-                  dayjs("2023/09/08", dateFormat),
-                ]}
-                format={dateFormat}
-              />
+          </Form>
+        </Col>
+        <Col span={6}></Col>
+      </Row>
+      <Row align={"middle"} justify={"center"}>
+        <Col span={2}></Col>
+        <Col span={20}>
+          <Form {...layout} layout="horizontal" style={{}}>
+            <Form.Item label="Generate Mode">
+              <Tabs defaultActiveKey="1" onChange={callback} type="card">
+                <TabPane tab="Time Range" key="1">
+                  <Form>
+                    <Form.Item label="Time Range:">
+                      <RangePicker
+                        defaultValue={[
+                          dayjs("2023/09/07", dateFormat),
+                          dayjs("2023/09/08", dateFormat),
+                        ]}
+                        format={dateFormat}
+                      />
+                    </Form.Item>
+                    <Form.Item label="Step:">
+                      <TimePicker defaultValue={dayjs("12:08:23", "HH:mm:ss")} />
+                    </Form.Item>
+                  </Form>
+                </TabPane>
+                <TabPane tab="Point Num" key="2">
+                  <Form>
+                    <Form.Item label="Time Range:">
+                      <RangePicker
+                        defaultValue={[
+                          dayjs("2023/09/07", dateFormat),
+                          dayjs("2023/09/08", dateFormat),
+                        ]}
+                        format={dateFormat}
+                      />
+                    </Form.Item>
+                    <Form.Item label="Points:">
+                      <InputNumber></InputNumber>
+                    </Form.Item>
+                  </Form>
+                </TabPane>
+              </Tabs>
             </Form.Item>
-            <Form.Item label="Step:">
-              <TimePicker defaultValue={dayjs("12:08:23", "HH:mm:ss")} />
-            </Form.Item>
+
             <Row justify="center">
               <Col>
                 <Button
@@ -161,13 +196,23 @@ const GenarateForm: FC = () => {
                   htmlType="submit"
                   style={{ width: "100%" }}
                 >
-                  generate
+                  Generate
+                </Button>
+              </Col>
+              <Col>
+                {/* TODO get a blank chart */}
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ width: "100%" }}
+                >
+                  Generate Blank
                 </Button>
               </Col>
             </Row>
           </Form>
         </Col>
-        <Col span={6}></Col>
+        <Col span={2}></Col>
       </Row>
     </div>
   );
