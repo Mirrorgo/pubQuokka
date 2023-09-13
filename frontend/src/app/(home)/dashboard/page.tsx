@@ -2,7 +2,6 @@
 import { Button, Card, Col, Row, Space, Typography } from "antd";
 import React, { useState } from "react";
 import styles from "./index.module.scss";
-import { type } from "os";
 type Notes = {
   date: string;
   type: string;
@@ -28,6 +27,7 @@ function DashBoard() {
       type: "Electrocardiography",
     },
   ]);
+  const [isDataSetsHidden, setIsDataSetsHidden] = useState(false);
   const [datasets, setDatasets] = useState<DataSet[]>([
     {
       lastEditDate: "13/09/2023",
@@ -78,29 +78,38 @@ function DashBoard() {
             <Title level={4}>You have {datasets.length} datasets</Title>
           </Col>
           <Col span={3}>
-            <Button type="primary">Hide</Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                setIsDataSetsHidden((cur) => !cur);
+              }}
+            >
+              {isDataSetsHidden ? "Show" : "Hide"}
+            </Button>
           </Col>
         </Row>
-        <Card>
-          <Space direction="vertical">
-            {datasets.map((cur, idx) => (
-              <Card key={idx} className={styles.dataSet}>
-                <div>TYPE: {cur.type}</div>
-                <div>Last edit: {cur.lastEditDate}</div>
-                <div>Dataset size: {cur.size}</div>
-                <div>Dataset owner: {cur.owner}</div>
-                <Row justify="space-evenly">
-                  <Col>
-                    <Button>Share the Data Set</Button>
-                  </Col>
-                  <Col>
-                    <Button>More details</Button>
-                  </Col>
-                </Row>
-              </Card>
-            ))}
-          </Space>
-        </Card>
+        {isDataSetsHidden || (
+          <Card>
+            <Space direction="vertical">
+              {datasets.map((cur, idx) => (
+                <Card key={idx} className={styles.dataSet}>
+                  <div>TYPE: {cur.type}</div>
+                  <div>Last edit: {cur.lastEditDate}</div>
+                  <div>Dataset size: {cur.size}</div>
+                  <div>Dataset owner: {cur.owner}</div>
+                  <Row justify="space-evenly">
+                    <Col>
+                      <Button>Share the Data Set</Button>
+                    </Col>
+                    <Col>
+                      <Button>More details</Button>
+                    </Col>
+                  </Row>
+                </Card>
+              ))}
+            </Space>
+          </Card>
+        )}
       </Space>
     </div>
   );
