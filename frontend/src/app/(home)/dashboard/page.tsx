@@ -12,6 +12,7 @@ type DataSet = {
   type: string;
   owner: string;
   size: number;
+  comments: { text: string; author: string }[];
 };
 
 const { Title } = Typography;
@@ -34,19 +35,21 @@ function DashBoard() {
       type: "Blood Oxygen Saturation",
       owner: "Jack",
       size: 1000,
+      comments: [{ text: "test comment1", author: "author1" }],
     },
     {
       lastEditDate: "12/09/2023",
       type: "Electrocardiography",
       owner: "Tom",
       size: 1500,
+      comments: [],
     },
   ]);
   return (
     <div>
       <Title level={2}>DashBoard</Title>
       <Space direction="vertical" className={styles["margin-content"]}>
-        <Row gutter={20}>
+        {/* <Row gutter={20}>
           <Col span={6}>
             <Title level={4}>Notes</Title>
           </Col>
@@ -69,7 +72,7 @@ function DashBoard() {
               </Col>
             ))}
           </Row>
-        </Card>
+        </Card> */}
         <Row gutter={20}>
           <Col span={6}>
             <Title level={4}>Datasets</Title>
@@ -97,6 +100,19 @@ function DashBoard() {
                   <div>Last edit: {cur.lastEditDate}</div>
                   <div>Dataset size: {cur.size}</div>
                   <div>Dataset owner: {cur.owner}</div>
+                  <div className={styles.comments}>
+                    Comments
+                    {/* TODO */}
+                    {cur.comments.length > 0 ? (
+                      cur.comments.map((comment, commentIdx) => (
+                        <div key={commentIdx} className={styles.comment}>
+                          {comment.text} by {comment.author}
+                        </div>
+                      ))
+                    ) : (
+                      <div>No comments available</div>
+                    )}
+                  </div>
                   <Row justify="space-evenly">
                     <Col>
                       <Button>Share the Data Set</Button>

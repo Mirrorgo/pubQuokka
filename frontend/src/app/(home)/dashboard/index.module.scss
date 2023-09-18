@@ -13,3 +13,41 @@
 	// padding: auto;
 
 }
+
+
+/* 添加样式规则以美化 comments */
+.comments {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	background-color: #f7f7f7;
+	/* 设置背景颜色 */
+	padding: 16px;
+	/* 设置内边距 */
+	border-radius: 8px;
+	/* 设置边框圆角 */
+	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+	/* 添加阴影效果 */
+}
+
+.comment {
+	margin-bottom: 16px;
+	/* 设置评论之间的间距 */
+	padding: 12px;
+	/* 设置评论的内边距 */
+	background-color: #fff;
+	/* 设置评论的背景颜色 */
+	border-radius: 4px;
+	/* 设置评论的边框圆角 */
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+	/* 添加评论的阴影效果 */
+}
+
+.comment .author {
+	font-weight: bold;
+	/* 设置作者的字体加粗 */
+}
+
+.comment .text {
+	margin-top: 8px;
+	/* 设置评论文本与作者之间的间距 */
+}
