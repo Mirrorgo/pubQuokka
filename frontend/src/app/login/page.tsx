@@ -1,75 +1,64 @@
 "use client";
-import { Button, Checkbox, Col, Form, Image, Input, Row } from "antd";
+import { Button, Checkbox, Col, Form, Image, Input, Row, Select } from "antd";
 import React, { FC, useState } from "react";
 import styles from "./index.module.scss";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+interface ApiResponse {
+  code: number;
+  msg: string;
+  data: string;
+}
 
 type LoginInput = {
   username: string;
   password: string;
   remember: boolean;
 };
+
+enum AccountType {
+  Individual = "individual",
+  Organization = "organization",
+}
+
 const Login: FC = () => {
   const router = useRouter();
-  const [data, setData] = useState(null);
-  console.log("data", data);
   const [isLogin, setIsLogin] = useState(true);
+  const [accountType, setAccountType] = useState<AccountType>(
+    AccountType.Individual
+  );
   // 67.219.111.154
-  // const onFinish = (values: LoginInput) => {
-  //   // console.log("Received values:", values);
-  //   // TODO
-  //   // axios
-  //   //   .get("http://67.219.111.154:8090/api/user/login") // 替换为你的后端 API 的实际 URL
-  //   //   .then((response) => {
-  //   //     setData(response.data);
-  //   //   })
-  //   //   .catch((error) => {
-  //   //     console.error("Error fetching data:", error);
-  //   //   });
-  //   // if (values.username === "admin" && values.password === "admin") {
-  //   //   // router.push("/home");
-  //   //   router.push("/generateForm");
-  //   // }
-  // };
-  const onFinish = async (values: LoginInput) => {
-    try {
-      const response = await axios.post(
-        "http://67.219.111.154:8090/api/user/login",
-        {
-          username: values.username,
-          password: values.password,
-        },
-        {
-          headers: {
-            "User-Agent": "Apifox/1.0.0 (https://apifox.com)",
-            "Content-Type": "application/json",
-            Accept: "*/*",
-            Host: "67.219.111.154:8090",
-            Connection: "keep-alive",
-          },
+  const onFinish = (values: LoginInput) => {
+    console.log("Received values:", values);
+    const postValues = {
+      username: values.username,
+      password: values.password,
+    };
+    // TODO;
+    axios
+      // .get("http://67.219.111.154:8081/api/user/login") // 替换为你的后端 API 的实际 URL
+      .post<ApiResponse>("/api/user/login", postValues) // 替换为你的后端 API 的实际 URL
+      .then((response) => {
+        const responseData = response.data;
+        if (responseData.code === 200) {
+          router.push("/dashboard");
+          //   router.push("/generateForm");
         }
-      );
-
-      // 处理登录成功的情况，这里可以根据后端返回的数据来进行逻辑处理
-      console.log("Login successful:", response.data);
-
-      // 之后你可以根据登录成功后的逻辑来跳转到其他页面
-      // 例如：
-      // router.push("/dashboard");
-      // 或
-      // router.push("/generateForm");
-    } catch (error) {
-      // 处理登录失败的情况
-      console.error("Login error:", error);
-    }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   };
 
   return (
     <div className={styles["main"]}>
       <Row align={"middle"} justify={"center"}>
         <Col span={12} push={2}>
-          <Image src="/image/loginLeft.png" alt="试试" width={"30vw"} />
+          <Image
+            src="/image/loginLeft.png"
+            alt="fhir studio image"
+            width={"30vw"}
+          />
         </Col>
         <Col span={12}>
           <div className={styles.right}>
@@ -108,11 +97,49 @@ const Login: FC = () => {
               >
                 <Input.Password placeholder="Password" />
               </Form.Item>
-              {isLogin && (
-                <Form.Item name="remember" valuePropName="checked">
-                  <Checkbox>Remember me</Checkbox>
-                </Form.Item>
+              {!isLogin && (
+                <>
+                  <Form.Item name="type" label="Account Type">
+                    <Select
+                      defaultValue={AccountType.Individual}
+                      options={[
+                        { value: AccountType.Individual, label: "Individual" },
+                        {
+                          value: AccountType.Organization,
+                          label: "Organization",
+                        },
+                      ]}
+                      onChange={(value) => setAccountType(value)}
+                    />
+                  </Form.Item>
+                  {accountType === AccountType.Individual ? (
+                    <>
+                      <Form.Item
+                        name="organization"
+                        label="Select Your Organization"
+                      >
+                        {/* 显示选择隶属的组织的字段 */}
+                        <Select
+                          options={[
+                            { value: "org1", label: "Organization 1" },
+                            { value: "org2", label: "Organization 2" },
+                            // 添加更多组织选项
+                          ]}
+                        />
+                      </Form.Item>
+                    </>
+                  ) : (
+                    <Form.Item
+                      name="organizationName"
+                      label="Enter Organization Name"
+                    >
+                      {/* 显示输入组织名的字段 */}
+                      <Input placeholder="Organization Name" />
+                    </Form.Item>
+                  )}
+                </>
               )}
+
               <Form.Item>
                 <Button
                   type="primary"

@@ -20,12 +20,15 @@
     "echarts": "^5.4.3",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
+    "jotai": "^2.4.3",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.2.2"
   },
   "devDependencies": {
+    "http-proxy-middleware": "^2.0.6",
+    "next-http-proxy-middleware": "^1.2.5",
     "sass": "^1.66.1"
   }
 }

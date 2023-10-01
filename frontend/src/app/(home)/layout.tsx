@@ -24,8 +24,18 @@ export default function HomeLayout({
           >
             Generation
           </Col>
-          <Col className={styles["nav-item"]}>My DataSet</Col>
-          <Col className={styles["nav-item"]}>Settings</Col>
+          <Col
+            className={styles["nav-item"]}
+            onClick={() => router.push("mydataset")}
+          >
+            My DataSet
+          </Col>
+          <Col
+            className={styles["nav-item"]}
+            onClick={() => router.push("settings")}
+          >
+            Settings
+          </Col>
         </Row>
       </Space>
       <Divider style={{ margin: "0" }} />
