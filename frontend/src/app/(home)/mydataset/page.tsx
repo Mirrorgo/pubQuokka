@@ -137,12 +137,11 @@ const MyDataset: FC = () => {
   const [set_title, setTitle] = useState(data[0].title);
   const [open, setOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const showModal = () => {
     setIsModalOpen(true);
   };
-  
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -155,13 +154,6 @@ const MyDataset: FC = () => {
     setOpen(false);
   };
 
-  const hadleShare = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    }, 3000);
-  }
 
   return (
     <div>
@@ -253,25 +245,55 @@ const MyDataset: FC = () => {
           }}
           dataSource={ShareMembers}
           // footer={}
-          renderItem={(item, index) => (
-            <List.Item
-              key={item.name}
-              // actions={[
-              //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-              //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-              //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-              // ]}
-              actions={[
-                <Button key="submit" type="primary" loading={loading} onClick={hadleShare}>
-                  Share
-                </Button>
-              ]
-              }>
-              <List.Item.Meta
-                avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`} />}
-                title={item.name}></List.Item.Meta>
-            </List.Item>
-          )}
+          // renderItem={(item, index) => (
+          //   <List.Item
+          //     key={item.name}
+          //     // actions={[
+          //     //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+          //     //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+          //     //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+          //     // ]}
+          //     actions={[
+          //       <Button key="submit" type="primary" loading={loading} onClick={hadleShare}>
+          //         Share
+          //       </Button>
+          //     ]
+          //     }>
+          //     <List.Item.Meta
+          //       avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`} />}
+          //       title={item.name}></List.Item.Meta>
+          //   </List.Item>
+          // )}
+          renderItem={(item, index) => {
+            const [loading, setLoading] = useState(false);
+            const hadleShare = () => {
+              setLoading(true);
+              setTimeout(() => {
+                setLoading(false);
+                setOpen(false);
+              }, 3000);
+            }
+            return (
+              <List.Item
+                key={item.name}
+                // actions={[
+                //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+                //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+                //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+                // ]}
+                actions={[
+                  <Button key="submit" type="primary" loading={loading} onClick={hadleShare}>
+                    Share
+                  </Button>
+                ]
+                }>
+                <List.Item.Meta
+                  avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`} />}
+                  title={item.name}></List.Item.Meta>
+              </List.Item>
+            )
+
+          }}
         ></List>
         <Card title="Share Code" bordered={false}>
           <Row>
