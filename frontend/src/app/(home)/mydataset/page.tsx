@@ -8,7 +8,13 @@ import {
   Typography,
   Descriptions,
   Badge,
+  Avatar,
+  Space,
+  Button,
+  Drawer,
+  Modal
 } from "antd";
+import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
 import React, { FC, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DescriptionsProps } from "antd";
@@ -18,24 +24,58 @@ const { Paragraph } = Typography;
 
 const data = [
   {
-    title: "Dataset 1",
+    title: "Dataset1",
+    latestUpdateTime: "08.21.2023",
   },
   {
-    title: "Dataset 2",
+    title: "Dataset2",
+    latestUpdateTime: "08.21.2023",
   },
   {
-    title: "Dataset 3",
+    title: "Dataset3",
+    latestUpdateTime: "08.21.2023",
   },
   {
-    title: "Dataset 4",
+    title: "Dataset4",
+    latestUpdateTime: "08.21.2023",
   },
   {
-    title: "Dataset 5",
+    title: "Dataset5",
+    latestUpdateTime: "08.21.2023",
   },
   {
-    title: "Dataset 6",
+    title: "Dataset6",
+    latestUpdateTime: "08.21.2023",
+  },
+  {
+    title: "Dataset7",
+    latestUpdateTime: "08.21.2023",
   },
 ];
+
+const ShareMembers = [
+  {
+    Avatar: 1,
+    name: "LWZ",
+  },
+  {
+    Avatar: 2,
+    name: "LC",
+  },
+  {
+    Avatar: 3,
+    name: "CSY",
+  },
+  {
+    Avatar: 4,
+    name: "WJS",
+  },
+  {
+    Avatar: 5,
+    name: "GLS",
+  }
+]
+
 
 const items: DescriptionsProps["items"] = [
   {
@@ -46,7 +86,7 @@ const items: DescriptionsProps["items"] = [
   },
   {
     key: "2",
-    label: "Simulate Size",
+    label: "Simulate Points",
     children: "100",
   },
   {
@@ -81,6 +121,13 @@ const items: DescriptionsProps["items"] = [
   },
 ];
 
+const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
+  <Space>
+    {React.createElement(icon)}
+    {text}
+  </Space>
+);
+
 const MyDataset: FC = () => {
   const router = useRouter();
   const handleClick = (title: string) => {
@@ -88,13 +135,40 @@ const MyDataset: FC = () => {
     console.log(title);
   };
   const [set_title, setTitle] = useState(data[0].title);
+  const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  const hadleShare = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setOpen(false);
+    }, 3000);
+  }
 
   return (
     <div>
       <Row align={"middle"} justify={"start"}>
-        <Tabs defaultActiveKey="1">
+        <Tabs defaultActiveKey="1" style={{ width: "100%" }}>
           <TabPane tab="My Data Set" key="1">
-            <List
+            {/* <List
               grid={{
                 gutter: 16,
                 xs: 1,
@@ -110,7 +184,43 @@ const MyDataset: FC = () => {
                   <Card title={item.title}></Card>
                 </List.Item>
               )}
-            ></List>
+            ></List> */}
+            <List
+              bordered
+              itemLayout="horizontal"
+              size="large"
+              pagination={{
+                onChange: (page) => {
+                  console.log(page);
+                },
+                pageSize: 4,
+              }}
+              dataSource={data}
+              // footer={}
+              renderItem={(item, index) => (
+                <List.Item
+                  key={item.title}
+                  // actions={[
+                  //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+                  //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+                  //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+                  // ]}
+                  actions={[
+                    <a onClick={showDrawer}>View</a>,
+                    <a onClick={showModal}>Share</a>
+                  ]
+                  }
+                >
+                  <List.Item.Meta
+                    avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
+                    title={item.title}
+                    description={item.latestUpdateTime}
+                  />
+
+                  {/* {item.content} */}
+                </List.Item>
+              )}
+            />
           </TabPane>
         </Tabs>
       </Row>
@@ -125,6 +235,51 @@ const MyDataset: FC = () => {
           items={items}
         ></Descriptions>
       </Row>
+      <Drawer title="History" placement="right" onClose={onClose} open={open}>
+        <p>08.21.2023</p>
+        <p>06.21.2023</p>
+        <p>04.21.2023</p>
+      </Drawer>
+      <Modal title="Share" open={isModalOpen} onCancel={handleCancel} footer={[]}>
+        <List
+          bordered
+          itemLayout="horizontal"
+          size="small"
+          pagination={{
+            onChange: (page) => {
+              console.log(page);
+            },
+            pageSize: 4,
+          }}
+          dataSource={ShareMembers}
+          // footer={}
+          renderItem={(item, index) => (
+            <List.Item
+              key={item.name}
+              // actions={[
+              //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+              //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+              //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+              // ]}
+              actions={[
+                <Button key="submit" type="primary" loading={loading} onClick={hadleShare}>
+                  Share
+                </Button>
+              ]
+              }>
+              <List.Item.Meta
+                avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`} />}
+                title={item.name}></List.Item.Meta>
+            </List.Item>
+          )}
+        ></List>
+        <Card title="Share Code" bordered={false}>
+          <Row>
+            <p>QOJIUTBN312</p>
+            <Button type="primary">Press to copy</Button>
+          </Row>
+        </Card>
+      </Modal>
     </div>
   );
 };
