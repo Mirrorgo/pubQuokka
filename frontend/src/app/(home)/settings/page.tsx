@@ -27,7 +27,8 @@ function Settings() {
     useState(false); // 控制删除确认弹窗可见性
   const [usernameToDelete, setUsernameToDelete] = useState(""); // 存储待删除账户的用户名
 
-  const onFinish = (values) => {
+  // TODO: 优化类型
+  const onFinish = (values: any) => {
     // 处理提交逻辑，例如更新用户名、密码、组织等
     console.log("Submitted values:", values);
     setIsEditing(false); // 保存后退出编辑模式
