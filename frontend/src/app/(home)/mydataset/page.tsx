@@ -12,9 +12,9 @@ import {
   Space,
   Button,
   Drawer,
-  Modal
+  Modal,
 } from "antd";
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
+import { LikeOutlined, MessageOutlined, StarOutlined } from "@ant-design/icons";
 import React, { FC, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DescriptionsProps } from "antd";
@@ -73,9 +73,8 @@ const ShareMembers = [
   {
     Avatar: 5,
     name: "GLS",
-  }
-]
-
+  },
+];
 
 const items: DescriptionsProps["items"] = [
   {
@@ -142,7 +141,7 @@ const MyDataset: FC = () => {
   const showModal = () => {
     setIsModalOpen(true);
   };
-  
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -161,7 +160,7 @@ const MyDataset: FC = () => {
       setLoading(false);
       setOpen(false);
     }, 3000);
-  }
+  };
 
   return (
     <div>
@@ -206,13 +205,20 @@ const MyDataset: FC = () => {
                   //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
                   // ]}
                   actions={[
-                    <a onClick={showDrawer}>View</a>,
-                    <a onClick={showModal}>Share</a>
-                  ]
-                  }
+                    <a key={1} onClick={showDrawer}>
+                      View
+                    </a>,
+                    <a key={2} onClick={showModal}>
+                      Share
+                    </a>,
+                  ]}
                 >
                   <List.Item.Meta
-                    avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
+                    avatar={
+                      <Avatar
+                        src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`}
+                      />
+                    }
                     title={item.title}
                     description={item.latestUpdateTime}
                   />
@@ -240,7 +246,12 @@ const MyDataset: FC = () => {
         <p>06.21.2023</p>
         <p>04.21.2023</p>
       </Drawer>
-      <Modal title="Share" open={isModalOpen} onCancel={handleCancel} footer={[]}>
+      <Modal
+        title="Share"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={[]}
+      >
         <List
           bordered
           itemLayout="horizontal"
@@ -262,14 +273,24 @@ const MyDataset: FC = () => {
               //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
               // ]}
               actions={[
-                <Button key="submit" type="primary" loading={loading} onClick={hadleShare}>
+                <Button
+                  key="submit"
+                  type="primary"
+                  loading={loading}
+                  onClick={hadleShare}
+                >
                   Share
-                </Button>
-              ]
-              }>
+                </Button>,
+              ]}
+            >
               <List.Item.Meta
-                avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`} />}
-                title={item.name}></List.Item.Meta>
+                avatar={
+                  <Avatar
+                    src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`}
+                  />
+                }
+                title={item.name}
+              ></List.Item.Meta>
             </List.Item>
           )}
         ></List>
