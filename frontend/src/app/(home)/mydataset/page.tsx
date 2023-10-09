@@ -12,9 +12,10 @@ import {
   Space,
   Button,
   Drawer,
-  Modal
+  Modal,
+  notification
 } from "antd";
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
+import { SmileOutlined } from '@ant-design/icons';
 import React, { FC, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DescriptionsProps } from "antd";
@@ -140,6 +141,7 @@ const MyDataset: FC = () => {
 
   const showModal = () => {
     setIsModalOpen(true);
+    console.log("111")
   };
 
   const handleCancel = () => {
@@ -153,6 +155,17 @@ const MyDataset: FC = () => {
   const onClose = () => {
     setOpen(false);
   };
+
+
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = () => {
+    api.open({
+      message: 'Successfully',
+      description:
+        'You have already shared the dataset to User Choosen',
+      icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+    });
+  }
 
 
   return (
@@ -199,7 +212,8 @@ const MyDataset: FC = () => {
                   // ]}
                   actions={[
                     <a onClick={showDrawer}>View</a>,
-                    <a onClick={showModal}>Share</a>
+                    <a onClick={showModal}>Share</a>,
+                    <a onClick={()=>console.log("11233")}>Share</a>
                   ]
                   }
                 >
@@ -271,7 +285,10 @@ const MyDataset: FC = () => {
               setTimeout(() => {
                 setLoading(false);
                 setOpen(false);
-              }, 3000);
+                setIsModalOpen(false);
+                openNotification();
+              }, 2000);
+
             }
             return (
               <List.Item
@@ -295,13 +312,8 @@ const MyDataset: FC = () => {
 
           }}
         ></List>
-        <Card title="Share Code" bordered={false}>
-          <Row>
-            <p>QOJIUTBN312</p>
-            <Button type="primary">Press to copy</Button>
-          </Row>
-        </Card>
       </Modal>
+      {contextHolder} 
     </div>
   );
 };
