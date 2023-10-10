@@ -16,23 +16,23 @@ export default function HomeLayout({
         <Image src="/image/validationBlack.png" alt="icon" width="30vw" />
         <Row justify="space-around" align="middle" style={{ width: "60vw" }}>
           <Col className={styles["nav-item"]}>
-            <div onClick={() => router.push("dashboard")}>Dashboard</div>
+            <div onClick={() => router.push("/dashboard")}>Dashboard</div>
           </Col>
           <Col
             className={styles["nav-item"]}
-            onClick={() => router.push("generateForm")}
+            onClick={() => router.push("/generateForm")}
           >
             Generation
           </Col>
           <Col
             className={styles["nav-item"]}
-            onClick={() => router.push("mydataset")}
+            onClick={() => router.push("/mydataset/0")}
           >
             My DataSet
           </Col>
           <Col
             className={styles["nav-item"]}
-            onClick={() => router.push("settings")}
+            onClick={() => router.push("/settings")}
           >
             Settings
           </Col>

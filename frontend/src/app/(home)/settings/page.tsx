@@ -89,6 +89,7 @@ function Settings() {
           <Button type="primary" danger onClick={handleDeleteAccount}>
             Delete Account
           </Button>
+          <Button type="primary">invite individual</Button>
         </Space>
       </Form>
 

@@ -115,9 +115,6 @@ function DashBoard() {
                   </div>
                   <Row justify="space-evenly">
                     <Col>
-                      <Button>Share the Data Set</Button>
-                    </Col>
-                    <Col>
                       <Button>More details</Button>
                     </Col>
                   </Row>

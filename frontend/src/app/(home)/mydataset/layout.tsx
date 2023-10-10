@@ -19,40 +19,42 @@ import { SmileOutlined } from '@ant-design/icons';
 import React, { FC, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DescriptionsProps } from "antd";
+import { DataSet, currentDataSetAtom } from "@/store/global";
+import { useAtom } from "jotai";
 
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
 
-const data = [
-  {
-    title: "Dataset1",
-    latestUpdateTime: "08.21.2023",
-  },
-  {
-    title: "Dataset2",
-    latestUpdateTime: "08.21.2023",
-  },
-  {
-    title: "Dataset3",
-    latestUpdateTime: "08.21.2023",
-  },
-  {
-    title: "Dataset4",
-    latestUpdateTime: "08.21.2023",
-  },
-  {
-    title: "Dataset5",
-    latestUpdateTime: "08.21.2023",
-  },
-  {
-    title: "Dataset6",
-    latestUpdateTime: "08.21.2023",
-  },
-  {
-    title: "Dataset7",
-    latestUpdateTime: "08.21.2023",
-  },
-];
+// const data = [
+//   {
+//     title: "Dataset1",
+//     latestUpdateTime: "08.21.2023",
+//   },
+//   {
+//     title: "Dataset2",
+//     latestUpdateTime: "08.21.2023",
+//   },
+//   {
+//     title: "Dataset3",
+//     latestUpdateTime: "08.21.2023",
+//   },
+//   {
+//     title: "Dataset4",
+//     latestUpdateTime: "08.21.2023",
+//   },
+//   {
+//     title: "Dataset5",
+//     latestUpdateTime: "08.21.2023",
+//   },
+//   {
+//     title: "Dataset6",
+//     latestUpdateTime: "08.21.2023",
+//   },
+//   {
+//     title: "Dataset7",
+//     latestUpdateTime: "08.21.2023",
+//   },
+// ];
 
 const ShareMembers = [
   {
@@ -76,50 +78,96 @@ const ShareMembers = [
     name: "GLS",
   },
 ];
-
-const items: DescriptionsProps["items"] = [
+const dataSets: DataSet[] = [
   {
-    key: "1",
-    label: "Simulate Type",
-    children: "Blood Oxygen Saturation",
-    span: 2,
+    dataSetId: "1",
+    title: "test1",
+    configuration: {
+      type: "Cmkqck Llar Ydgpgbvoa",
+      point: 10,
+      unit: "Wophgmy Rifhtxega Ngrauou Ncuttn",
+      currentVersionId: "1",
+    },
+    datas: [
+      {
+        versionId: "1",
+        time: "1998-08-26 17:27:53",
+        data: [
+          {
+            time: "2014-07-29 18:25:47",
+            value: "voluptate ipsum Duis",
+          },
+        ],
+      },
+    ],
   },
   {
-    key: "2",
-    label: "Simulate Points",
-    children: "100",
-  },
-  {
-    key: "3",
-    label: "Resource Type",
-    children: "Patient",
-    span: 3,
-  },
-  {
-    key: "4",
-    label: "Status",
-    children: <Badge status="processing" text="Running" />,
-    span: 3,
-  },
-  {
-    key: "5",
-    label: "Information included",
-    children: (
-      <>
-        1. Name
-        <br />
-        2. Identifier
-        <br />
-        3. Age
-        <br />
-        4. Birthday
-        <br />
-        5. Gender
-        <br />
-      </>
-    ),
+    dataSetId: "2",
+    title: "test2",
+    configuration: {
+      type: "Cmkqck Llar Ydgpgbvoa",
+      point: 10,
+      unit: "Wophgmy Rifhtxega Ngrauou Ncuttn",
+      currentVersionId: "1",
+    },
+    datas: [
+      {
+        versionId: "1",
+        time: "1998-08-26 17:27:53",
+        data: [
+          {
+            time: "2014-07-29 18:25:47",
+            value: "voluptate ipsum Duis",
+          },
+        ],
+      },
+    ],
   },
 ];
+
+// const items: DescriptionsProps["items"] = [
+//   {
+//     key: "1",
+//     label: "Simulate Type",
+//     children: "Blood Oxygen Saturation",
+//     span: 2,
+//   },
+//   {
+//     key: "2",
+//     label: "Simulate Points",
+//     children: "100",
+//   },
+//   {
+//     key: "3",
+//     label: "Resource Type",
+//     children: "Patient",
+//     span: 3,
+//   },
+//   {
+//     key: "4",
+//     label: "Status",
+//     children: <Badge status="processing" text="Running" />,
+//     span: 3,
+//   },
+//   {
+//     key: "5",
+//     label: "Information included",
+//     children: (
+//       <>
+//         1. Name
+//         <br />
+//         2. Identifier
+//         <br />
+//         3. Age
+//         <br />
+//         4. Birthday
+//         <br />
+//         5. Gender
+//         <br />
+//       </>
+//     ),
+//   },
+// ];
 
 const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
   <Space>
@@ -128,16 +176,22 @@ const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
   </Space>
 );
 
-const MyDataset: FC = () => {
+const MyDataset: FC<{
+  children: React.ReactNode;
+}> = ({
+  children, // will be a page or nested layout
+}) => {
   const router = useRouter();
-  const handleClick = (title: string) => {
-    setTitle(title);
-    console.log(title);
-  };
-  const [set_title, setTitle] = useState(data[0].title);
+  const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom); // 仅临时使用，正常应该第一次打开不显示，点击后显示。如果点击0则显示0
   const [open, setOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const showDetail = (dataSetId: any) => {
+    console.log(dataSetId, "info");
+    const temp = dataSets.find((cur) => cur.dataSetId === dataSetId) as DataSet;
+    setCurrentDataSet(temp);
+    router.push(`/mydataset/${dataSetId}`);
+  };
   const showModal = () => {
     setIsModalOpen(true);
     console.log("111")
@@ -172,23 +226,6 @@ const MyDataset: FC = () => {
       <Row align={"middle"} justify={"start"}>
         <Tabs defaultActiveKey="1" style={{ width: "100%" }}>
           <TabPane tab="My Data Set" key="1">
-            {/* <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 2,
-                md: 4,
-                lg: 4,
-                xl: 6,
-                xxl: 3,
-              }}
-              dataSource={data}
-              renderItem={(item) => (
-                <List.Item onClick={() => handleClick(item.title)}>
-                  <Card title={item.title}></Card>
-                </List.Item>
-              )}
-            ></List> */}
             <List
               bordered
               itemLayout="horizontal"
@@ -199,21 +236,22 @@ const MyDataset: FC = () => {
                 },
                 pageSize: 4,
               }}
-              dataSource={data}
+              dataSource={dataSets}
               // footer={}
-              renderItem={(item, index) => (
+              renderItem={(item: any, index) => (
                 <List.Item
-                  key={item.title}
-                  // actions={[
-                  //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-                  //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-                  //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-                  // ]}
+                  key={item.dataSetId}
                   actions={[
-                    <a onClick={showDrawer}>View</a>,
-                    <a onClick={showModal}>Share</a>,
-                  ]
-                  }
+                    <a key={1} onClick={() => showDetail(item.dataSetId)}>
+                      Detail
+                    </a>,
+                    <a key={2} onClick={showDrawer}>
+                      History
+                    </a>,
+                    <a key={3} onClick={showModal}>
+                      Share
+                    </a>,
+                  ]}
                 >
                   <List.Item.Meta
                     avatar={
@@ -233,15 +271,16 @@ const MyDataset: FC = () => {
         </Tabs>
       </Row>
       <Divider></Divider>
+      {children}
       <Paragraph style={{ fontSize: "x-large", fontWeight: "bold" }}>
-        {set_title}
+        {currentDataSet.title}
       </Paragraph>
       <Row align={"middle"} justify={"start"}>
-        <Descriptions
+        {/* <Descriptions
           title="Review Configuration"
           bordered
           items={items}
-        ></Descriptions>
+        ></Descriptions> */}
       </Row>
       <Drawer title="History" placement="right" onClose={onClose} open={open}>
         <p>08.21.2023</p>
