@@ -23,7 +23,7 @@ enum ActionType {
   Add = "add",
 }
 
-function Home() {
+function Diagram() {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [chartData, setChartData] = useState<number[][]>([[]]);
@@ -184,4 +184,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Diagram;

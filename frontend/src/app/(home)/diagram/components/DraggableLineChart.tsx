@@ -9,6 +9,10 @@ interface DraggableLineChartProps {
   editValue: number | null;
   setEditValue: React.Dispatch<React.SetStateAction<number | null>>;
 }
+const boundary = {
+  max: 70,
+  min: 5,
+};
 
 const DraggableLineChart: FC<DraggableLineChartProps> = ({
   data,
@@ -42,9 +46,51 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
         },
         yAxis: {
           type: "value",
+          // TODO: 优化到与实际值相关,因为可能会超出范围
+          max: boundary.max * 1.1,
+          min: Math.min(boundary.min - boundary.max * 0.1, 0),
         },
         series: [
           {
+            markLine: {
+              data: [
+                {
+                  yAxis: boundary.max, // 上限值
+                  // lineStyle: {
+                  //   color: "red",
+                  // },
+                  label: {
+                    position: "end",
+                    formatter: "上限: 15",
+                  },
+                },
+                {
+                  yAxis: boundary.min, // 下限值
+                  // lineStyle: {
+                  //   color: "green",
+                  // },
+                  label: {
+                    position: "end",
+                    formatter: "下限: 25",
+                  },
+                },
+              ],
+            },
+            markArea: {
+              data: [
+                [
+                  {
+                    yAxis: boundary.max, // 标记区域的上限值
+                  },
+                  {
+                    yAxis: boundary.min, // 标记区域的下限值
+                  },
+                ],
+              ],
+              itemStyle: {
+                color: "rgba(0, 128, 0, 0.1)", // 标记区域的填充颜色
+              },
+            },
             type: "line",
             data: data,
             symbol: "circle",
