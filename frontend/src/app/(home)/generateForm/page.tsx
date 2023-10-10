@@ -31,9 +31,7 @@ const layout = {
 };
 
 const marks: SliderMarks = {
-  0: "0%",
-  90: "90%",
-  99: "99%",
+  0: "0"
 };
 
 const { RangePicker } = DatePicker;
@@ -61,6 +59,21 @@ const GenarateForm: FC = () => {
 
   const onSearch = (value: string) => {
     console.log("search:", value);
+  };
+
+  const [downNumber, setDownNumber] = useState(1);
+  const [upNumber, setUpNumber] = useState(2);
+
+  const handleDownNumberChange = (value: number|null) => {
+    if (value !== null && value < upNumber) {
+      setDownNumber(value);
+    }
+  };
+
+  const handleUpNumberChange = (value: number|null) => {
+    if (value !== null && value > downNumber) {
+      setUpNumber(value);
+    }
   };
   return (
     <div>
@@ -95,6 +108,7 @@ const GenarateForm: FC = () => {
             </Form.Item>
             <Form.Item label="Trend">
               <Select
+              // todo change it to api
                 defaultValue="up"
                 onChange={onChange}
                 options={[
@@ -118,12 +132,25 @@ const GenarateForm: FC = () => {
               style={{ position: "relative", padding: "0px 30px" }}
             >
               <Row align={"middle"} justify={"center"}>
-                <Col span={20}>
-                  <Slider
+                <Col>
+                <InputNumber
+                value={downNumber}
+                onChange={handleDownNumberChange}
+                max={upNumber - 1} 
+                ></InputNumber>
+
+                <InputNumber
+                value={upNumber}
+                onChange={handleUpNumberChange}
+                min={downNumber + 1} 
+                ></InputNumber>
+                </Col>
+                {/* <Col span={20}>
+                  {/* <Slider
                     marks={marks}
                     defaultValue={[90, 99]}
                     range={{ draggableTrack: true }}
-                  ></Slider>
+                  ></Slider> */}
                   {/* <Slider
                     marks={marks}
                     defaultValue={[90, 99]}
@@ -143,10 +170,10 @@ const GenarateForm: FC = () => {
                     handleSizeHover={8}
                     range={{ draggableTrack: true }}
                   ></Slider> */}
-                </Col>
+                {/* </Col>
                 <Col span={1}>
                   <p>%</p>
-                </Col>
+                </Col> */}
               </Row>
             </Form.Item>
           </Form>

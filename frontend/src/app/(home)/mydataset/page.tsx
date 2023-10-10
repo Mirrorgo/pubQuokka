@@ -212,7 +212,6 @@ const MyDataset: FC = () => {
                   actions={[
                     <a onClick={showDrawer}>View</a>,
                     <a onClick={showModal}>Share</a>,
-                    <a onClick={()=>console.log("11233")}>Share</a>
                   ]
                   }
                 >
