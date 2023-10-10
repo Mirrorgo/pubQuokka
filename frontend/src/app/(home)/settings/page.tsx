@@ -1,5 +1,5 @@
 "use client";
-import { countAtom } from "@/store/global";
+import { AccountType, countAtom, currentUserAtom } from "@/store/global";
 import {
   Button,
   Col,
@@ -18,16 +18,17 @@ const { Option } = Select;
 const { Text } = Typography;
 
 function Settings() {
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [count, setCount] = useAtom(countAtom);
   const [form] = Form.useForm();
-  const [accountType, setAccountType] = useState("individual");
   const [isEditing, setIsEditing] = useState(false); // 是否处于编辑模式
   const [visible, setVisible] = useState(false); // 控制弹窗可见性
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
     useState(false); // 控制删除确认弹窗可见性
   const [usernameToDelete, setUsernameToDelete] = useState(""); // 存储待删除账户的用户名
 
-  const onFinish = (values) => {
+  // TODO: 优化类型
+  const onFinish = (values: any) => {
     // 处理提交逻辑，例如更新用户名、密码、组织等
     console.log("Submitted values:", values);
     setIsEditing(false); // 保存后退出编辑模式
@@ -51,6 +52,7 @@ function Settings() {
   const handleDeleteConfirmation = () => {
     // 处理删除账户逻辑
     console.log("Account deleted:", usernameToDelete);
+    // TODO： 顶部notification提示：删除成功
     setDeleteConfirmationVisible(false); // 关闭删除确认弹窗
   };
 
@@ -71,36 +73,29 @@ function Settings() {
         wrapperCol={{ span: 12 }}
       >
         <Form.Item name="username" label="Username">
-          <Text>{/* 显示只读的用户名 */}</Text>
-        </Form.Item>
-        <Form.Item name="password" label="Password">
-          <Text>{/* 显示只读的密码 */}</Text>
+          <Text>{currentUser.userName}</Text>
         </Form.Item>
         <Form.Item name="accountType" label="Account Type">
-          <Text>{accountType}</Text>
+          <Text>{currentUser.accountType}</Text>
         </Form.Item>
-        <Form.Item name="organization" label="Organization">
-          <Text>{/* 显示只读的组织 */}</Text>
+        <Form.Item name="organizationName" label="Organization Name">
+          <Text>{currentUser.organizationName}</Text>
         </Form.Item>
         <Space>
-          <Button type="primary" onClick={handleEdit}>
+          {/* TODO: 暂时不显示这个，还没想好用来做什么 */}
+          {/* <Button type="primary" onClick={handleEdit}>
             Edit Account
-          </Button>
+          </Button> */}
           <Button type="primary" danger onClick={handleDeleteAccount}>
             Delete Account
           </Button>
         </Space>
       </Form>
-      <Row justify="center">
-        <Col span={12}>
-          <Text strong>Your Account Type: {accountType}</Text>
-        </Col>
-      </Row>
 
       {/* 弹窗 */}
       <Modal
         title="Edit Account"
-        visible={visible}
+        open={visible}
         onOk={form.submit}
         onCancel={handleCancel}
       >
@@ -110,19 +105,22 @@ function Settings() {
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 12 }}
         >
-          <Form.Item name="username" label="Username">
-            <Input placeholder="New Username" />
-          </Form.Item>
-          <Form.Item name="password" label="Password">
-            <Input.Password placeholder="New Password" />
-          </Form.Item>
-          <Form.Item name="accountType" label="Account Type">
-            <Select value={accountType} onChange={setAccountType}>
-              <Option value="individual">Individual</Option>
-              <Option value="organization">Organization</Option>
+          <Form.Item
+            name="accountType"
+            label="Account Type"
+            initialValue={currentUser.accountType}
+          >
+            <Select
+              value={currentUser.accountType}
+              onChange={(value) =>
+                setCurrentUser((pre) => ({ ...pre, accountType: value }))
+              }
+            >
+              <Option value={AccountType.Individual}>Individual</Option>
+              <Option value={AccountType.Organization}>Organization</Option>
             </Select>
           </Form.Item>
-          <Form.Item name="organization" label="Organization">
+          <Form.Item name="organization" label="OrganizationName">
             <Select>
               <Option value="org1">Organization 1</Option>
               <Option value="org2">Organization 2</Option>
@@ -142,7 +140,7 @@ function Settings() {
       {/* 删除账户确认弹窗 */}
       <Modal
         title="Delete Account"
-        visible={deleteConfirmationVisible}
+        open={deleteConfirmationVisible}
         onOk={handleDeleteConfirmation}
         onCancel={handleDeleteCancel}
       >

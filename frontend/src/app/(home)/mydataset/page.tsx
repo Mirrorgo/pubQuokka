@@ -74,9 +74,8 @@ const ShareMembers = [
   {
     Avatar: 5,
     name: "GLS",
-  }
-]
-
+  },
+];
 
 const items: DescriptionsProps["items"] = [
   {
@@ -218,7 +217,11 @@ const MyDataset: FC = () => {
                   }
                 >
                   <List.Item.Meta
-                    avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
+                    avatar={
+                      <Avatar
+                        src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`}
+                      />
+                    }
                     title={item.title}
                     description={item.latestUpdateTime}
                   />
@@ -246,7 +249,12 @@ const MyDataset: FC = () => {
         <p>06.21.2023</p>
         <p>04.21.2023</p>
       </Drawer>
-      <Modal title="Share" open={isModalOpen} onCancel={handleCancel} footer={[]}>
+      <Modal
+        title="Share"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={[]}
+      >
         <List
           bordered
           itemLayout="horizontal"

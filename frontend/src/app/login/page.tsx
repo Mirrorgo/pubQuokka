@@ -1,25 +1,16 @@
 "use client";
-import { Button, Checkbox, Col, Form, Image, Input, Row, Select } from "antd";
+import { Button, Col, Form, Image, Input, Row, Select } from "antd";
 import React, { FC, useState } from "react";
 import styles from "./index.module.scss";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-interface ApiResponse {
-  code: number;
-  msg: string;
-  data: string;
-}
+import { AccountType, BaseResponse } from "@/store/global";
 
 type LoginInput = {
   username: string;
   password: string;
   remember: boolean;
 };
-
-enum AccountType {
-  Individual = "individual",
-  Organization = "organization",
-}
 
 const Login: FC = () => {
   const router = useRouter();
@@ -37,12 +28,11 @@ const Login: FC = () => {
     // TODO;
     axios
       // .get("http://67.219.111.154:8081/api/user/login") // 替换为你的后端 API 的实际 URL
-      .post<ApiResponse>("/api/user/login", postValues) // 替换为你的后端 API 的实际 URL
+      .post<BaseResponse<string>>("/api/user/login", postValues) // 替换为你的后端 API 的实际 URL
       .then((response) => {
         const responseData = response.data;
         if (responseData.code === 200) {
           router.push("/dashboard");
-          //   router.push("/generateForm");
         }
       })
       .catch((error) => {
@@ -112,23 +102,7 @@ const Login: FC = () => {
                       onChange={(value) => setAccountType(value)}
                     />
                   </Form.Item>
-                  {accountType === AccountType.Individual ? (
-                    <>
-                      <Form.Item
-                        name="organization"
-                        label="Select Your Organization"
-                      >
-                        {/* 显示选择隶属的组织的字段 */}
-                        <Select
-                          options={[
-                            { value: "org1", label: "Organization 1" },
-                            { value: "org2", label: "Organization 2" },
-                            // 添加更多组织选项
-                          ]}
-                        />
-                      </Form.Item>
-                    </>
-                  ) : (
+                  {accountType === AccountType.Organization && (
                     <Form.Item
                       name="organizationName"
                       label="Enter Organization Name"
