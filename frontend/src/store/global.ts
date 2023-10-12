@@ -1,13 +1,19 @@
 import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
 enum AccountType {
   Individual = "individual",
   Organization = "organization",
 }
 
-/**
- * dataSet
- */
+type UserInfoType = {
+  userId: string;
+  userName: string;
+  accountType: AccountType;
+  organizationId?: string;
+  organizationName?: string;
+};
+
 type DataSet = {
   configuration: {
     currentVersionId: string;
@@ -41,15 +47,18 @@ interface BaseResponse<T> {
   data: T;
 }
 
-const countAtom = atom(0);
-const currentUserAtom = atom({
-  userId: "testUserId",
+const currentUserAtom = atomWithStorage<UserInfoType>("currentUser", {
+  userId: "0",
   userName: "testUserName",
   //   accountType: AccountType.Individual,
   accountType: AccountType.Organization,
   organizationId: "testOrganizationId",
   organizationName: "testOrganizationName",
 });
+
+const currentEditingDataSetAtom = atom("0"); // 标识正在编辑的dataset,因为可能在浏览以前的datasetVersion
+// 浏览以前datasetVersion的时候只支持恢复操作，不支持直接编辑
+//
 
 const currentDataSetAtom = atom({
   dataSetId: "1",
@@ -74,6 +83,6 @@ const currentDataSetAtom = atom({
   ],
 });
 
-export { countAtom, currentUserAtom, currentDataSetAtom };
+export { currentUserAtom, currentDataSetAtom };
 export { AccountType };
-export type { BaseResponse, DataSet };
+export type { BaseResponse, DataSet, UserInfoType };

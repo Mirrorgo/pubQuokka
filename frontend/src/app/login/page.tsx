@@ -1,43 +1,45 @@
 "use client";
-import { Button, Col, Form, Image, Input, Row, Select } from "antd";
+import { Button, Col, Form, Image, Input, Row, Select, message } from "antd";
 import React, { FC, useState } from "react";
 import styles from "./index.module.scss";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { AccountType, BaseResponse } from "@/store/global";
-
-type LoginInput = {
-  username: string;
-  password: string;
-  remember: boolean;
-};
+import { AccountType, BaseResponse, currentUserAtom } from "@/store/global";
+import { login, signUp } from "@/service/user";
+import { MsgType } from "@/service/requestType";
+import { useAtom } from "jotai";
 
 const Login: FC = () => {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [accountType, setAccountType] = useState<AccountType>(
     AccountType.Individual
   );
-  // 67.219.111.154
-  const onFinish = (values: LoginInput) => {
-    console.log("Received values:", values);
-    const postValues = {
-      username: values.username,
-      password: values.password,
-    };
-    // TODO;
-    axios
-      // .get("http://67.219.111.154:8081/api/user/login") // 替换为你的后端 API 的实际 URL
-      .post<BaseResponse<string>>("/api/user/login", postValues) // 替换为你的后端 API 的实际 URL
-      .then((response) => {
-        const responseData = response.data;
-        if (responseData.code === 200) {
-          router.push("/dashboard");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+  const onFinish = async (values: object) => {
+    // console.log("login inputs", values);
+    if (isLogin) {
+      const res = await login(values);
+      if (res.data.msg === MsgType.SUCCESS) {
+        setCurrentUser(res.data.data);
+        router.push("/dashboard");
+      } else if (res.data.msg === MsgType.FAILURE) {
+        message.error("invalid username or password");
+      } else {
+        message.error("server error");
+      }
+    } else {
+      const res = await signUp(values);
+      if (res.data.msg === MsgType.SUCCESS) {
+        // router.push("/dashboard");
+        message.success("Registration Success");
+        setIsLogin(true);
+      } else if (res.data.msg === MsgType.FAILURE) {
+        message.error(res.data.data);
+      } else {
+        message.error("server error");
+      }
+    }
   };
 
   return (
@@ -66,11 +68,7 @@ const Login: FC = () => {
               </div>
             </div>
 
-            <Form
-              name="login"
-              initialValues={{ remember: true }}
-              onFinish={onFinish}
-            >
+            <Form initialValues={{ remember: true }} onFinish={onFinish}>
               <Form.Item
                 name="username"
                 rules={[
@@ -89,7 +87,7 @@ const Login: FC = () => {
               </Form.Item>
               {!isLogin && (
                 <>
-                  <Form.Item name="type" label="Account Type">
+                  <Form.Item name="role" label="Account Type">
                     <Select
                       defaultValue={AccountType.Individual}
                       options={[

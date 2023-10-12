@@ -1,5 +1,5 @@
 "use client";
-import { AccountType, countAtom, currentUserAtom } from "@/store/global";
+import { AccountType, currentUserAtom } from "@/store/global";
 import {
   Button,
   Col,
@@ -13,13 +13,13 @@ import {
 } from "antd";
 import { useAtom } from "jotai";
 import React, { useState } from "react";
+import UserListTable from "./components/UserListTable";
 
 const { Option } = Select;
 const { Text } = Typography;
 
 function Settings() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [count, setCount] = useAtom(countAtom);
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false); // 是否处于编辑模式
   const [visible, setVisible] = useState(false); // 控制弹窗可见性
@@ -51,9 +51,11 @@ function Settings() {
   };
   const handleDeleteConfirmation = () => {
     // 处理删除账户逻辑
-    console.log("Account deleted:", usernameToDelete);
-    // TODO： 顶部notification提示：删除成功
-    setDeleteConfirmationVisible(false); // 关闭删除确认弹窗
+    if (usernameToDelete === currentUser.userName) {
+      // TODO： 顶部notification提示：删除成功
+      console.log("Account deleted:", usernameToDelete);
+      setDeleteConfirmationVisible(false); // 关闭删除确认弹窗
+    }
   };
 
   const handleDeleteCancel = () => {
@@ -64,34 +66,66 @@ function Settings() {
 
   return (
     <>
-      <div>base info</div>
-      <Typography.Title level={3}>User Profile Settings</Typography.Title>
-      <Form
-        form={form}
-        onFinish={onFinish}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 12 }}
+      <div
+        style={{
+          width: "60vw",
+          margin: "auto",
+        }}
       >
-        <Form.Item name="username" label="Username">
-          <Text>{currentUser.userName}</Text>
-        </Form.Item>
-        <Form.Item name="accountType" label="Account Type">
-          <Text>{currentUser.accountType}</Text>
-        </Form.Item>
-        <Form.Item name="organizationName" label="Organization Name">
-          <Text>{currentUser.organizationName}</Text>
-        </Form.Item>
-        <Space>
+        <Typography.Title level={3}>Settings</Typography.Title>
+        <Typography.Title level={5}>Base Info</Typography.Title>
+        <Form
+          form={form}
+          onFinish={onFinish}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 12 }}
+        >
+          <Form.Item name="username" label="Username">
+            <Text>{currentUser.userName}</Text>
+          </Form.Item>
+          <Form.Item name="accountType" label="Account Type">
+            <Text>{currentUser.accountType}</Text>
+          </Form.Item>
+          {currentUser.organizationName && (
+            <Form.Item name="organizationName" label="Organization Name">
+              <Text>{currentUser.organizationName}</Text>
+            </Form.Item>
+          )}
+
           {/* TODO: 暂时不显示这个，还没想好用来做什么 */}
           {/* <Button type="primary" onClick={handleEdit}>
             Edit Account
           </Button> */}
-          <Button type="primary" danger onClick={handleDeleteAccount}>
-            Delete Account
-          </Button>
-          <Button type="primary">invite individual</Button>
-        </Space>
-      </Form>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              width: "100%",
+            }}
+          >
+            <Button type="primary" danger onClick={handleDeleteAccount}>
+              Delete Account
+            </Button>
+            {currentUser.accountType === AccountType.Organization && (
+              <Button type="primary">invite individual</Button>
+            )}
+          </div>
+        </Form>
+      </div>
+      <div style={{ height: "30px" }} />
+      {currentUser.accountType === AccountType.Organization && (
+        <div
+          style={{
+            width: "60vw",
+            margin: "auto",
+          }}
+        >
+          <Typography.Title level={5}>
+            Organization Member Management
+          </Typography.Title>
+          <UserListTable />
+        </div>
+      )}
 
       {/* 弹窗 */}
       <Modal
