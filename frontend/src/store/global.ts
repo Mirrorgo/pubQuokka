@@ -15,7 +15,7 @@ type UserInfoType = {
 };
 
 type DataSet = {
-  dataSetData: DataElement[];
+  dataSetData: DataElement[] | [];
   dataSetId: string;
   defaultBottom: string;
   defaultTop: string;
@@ -52,7 +52,8 @@ const currentUserAtom = atomWithStorage<UserInfoType>(
   initialUser
 );
 
-const currentEditingDataSetAtom = atom("0"); // 标识正在编辑的dataset,因为可能在浏览以前的datasetVersion
+// "0"代表新的update,
+const currentEditingDataSetAtom = atom<string>("0"); // 标识正在编辑的dataset,因为可能在浏览以前的datasetVersion
 // 浏览以前datasetVersion的时候只支持恢复操作，不支持直接编辑
 //
 
@@ -99,8 +100,16 @@ const currentEditingDataSetAtom = atom("0"); // 标识正在编辑的dataset,因
 //   ],
 // };
 
-const currentDataSetAtom = atomWithStorage<DataSet | {}>("currentDataSet", {});
+const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
+  dataSetData: [],
+  dataSetId: "1",
+  defaultBottom: "1",
+  defaultTop: "10",
+  modelType: "type1",
+  title: "",
+  unit: "%",
+});
 
-export { currentUserAtom, currentDataSetAtom };
+export { currentUserAtom, currentDataSetAtom, currentEditingDataSetAtom };
 export { AccountType };
 export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem };

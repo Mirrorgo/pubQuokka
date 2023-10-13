@@ -212,10 +212,12 @@ function Settings() {
           onChange={(e) => setUsernameToDelete(e.target.value)}
         />
       </Modal>
+      {/* invite弹窗 */}
       <Modal
         open={isInviteModalOpen}
         onCancel={() => setIsInviteModalOpen(false)}
         footer={null}
+        destroyOnClose={true}
       >
         <InviteUserListTable />
       </Modal>

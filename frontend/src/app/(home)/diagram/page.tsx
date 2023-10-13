@@ -14,9 +14,10 @@ import {
 } from "antd";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
-import { currentDataSetAtom } from "@/store/global";
+import { currentDataSetAtom, currentEditingDataSetAtom } from "@/store/global";
 // import { getCurrentVersionDataFromDataSet } from "@/utils/dataset";
 import { queryDataSetById, queryUpdateDataSet } from "@/service/dataset";
+import { MsgType } from "@/service/requestType";
 // import Title from "antd/es/typography/Title";
 // import Title from "antd/es/skeleton/Title";
 const { Title, Paragraph, Text, Link } = Typography;
@@ -29,13 +30,23 @@ enum ActionType {
 
 function Diagram() {
   const router = useRouter();
-  const [messageApi, contextHolder] = message.useMessage();
   const [chartData, setChartData] = useState<number[][]>([[]]);
   const [editingDataIndex, setEditingDataIndex] = useState<number | null>(null);
   const [editValue, setEditValue] = useState<number | null>(null);
   const [actionType, setActionType] = useState<ActionType>(ActionType.Empty);
   const [addPointX, setAddPointX] = useState<number>(0);
   const [addPointY, setAddPointY] = useState<number>(0);
+  const [editingVersionId, setEditingVersionId] = useAtom(
+    currentEditingDataSetAtom
+  );
+  const [status, setStatus] = useState<"view" | "edit">("view");
+  useEffect(() => {
+    if (editingVersionId === "0") {
+      setStatus("edit");
+    } else {
+      setStatus("view");
+    }
+  }, [editingVersionId]);
 
   const handleUpdateDataSet = async () => {
     // const res  = await queryUpdateDataSet()
@@ -66,13 +77,12 @@ function Diagram() {
     async function initDataSet() {
       const res = await queryDataSetById({ datasetId: "1" });
       console.log(res.data.data, "1");
+      if (res.data.msg === MsgType.SUCCESS) {
+        setCurrentDataSet(res.data.data);
+      }
     }
     initDataSet();
-  }, []);
-
-  const handleGenerateJson = useCallback(() => {
-    messageApi.success("Json has been generated and sent!");
-  }, [messageApi]);
+  }, [setCurrentDataSet]);
 
   const handleSave = () => {
     if (editingDataIndex !== null && editValue !== null) {
@@ -83,6 +93,16 @@ function Diagram() {
       setChartData(newData);
     }
   };
+
+  const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentDataSet((pre) => {
+      return {
+        ...pre,
+        title: e.target.value,
+      };
+    });
+  };
+
   const handleDelete = () => {
     if (editingDataIndex !== null) {
       const newData = [...chartData];
@@ -115,10 +135,16 @@ function Diagram() {
 
   return (
     <>
-      {contextHolder}
-      <Button type="primary" onClick={handleGoBack}>
-        Back
-      </Button>
+      <Space size="large">
+        <Button type="primary" onClick={handleGoBack}>
+          Back
+        </Button>
+        <Input
+          style={{ width: "30vw" }}
+          value={currentDataSet.title}
+          onChange={handleChangeTitle}
+        />
+      </Space>
       <Row style={{ width: "100vw", height: "500px" }}>
         <Col span={18}>
           <DraggableLineChart
@@ -149,57 +175,57 @@ function Diagram() {
             </div>
           ))} */}
 
-          <Button>Revert</Button>
-          <Card style={{ width: "100%", height: "100%" }}>
-            <Space direction="vertical">
-              <Title level={3}>Edit Panel</Title>
-              {editingDataIndex !== null && (
-                <Space direction="vertical">
-                  <Input
-                    addonBefore="y:"
-                    type="number"
-                    value={editValue === null ? "" : editValue}
-                    onChange={(e) => setEditValue(parseFloat(e.target.value))}
-                  />
-                  <Space>
-                    <Button onClick={handleSave} type="primary">
-                      Save
-                    </Button>
-                    <Button onClick={handleDelete} type="default">
-                      Delete
-                    </Button>
+          {status === "edit" ? (
+            <Card style={{ width: "100%", height: "100%" }}>
+              <Space direction="vertical">
+                <Title level={3}>Edit Panel</Title>
+                {editingDataIndex !== null && (
+                  <Space direction="vertical">
+                    <Input
+                      addonBefore="y:"
+                      type="number"
+                      value={editValue === null ? "" : editValue}
+                      onChange={(e) => setEditValue(parseFloat(e.target.value))}
+                    />
+                    <Space>
+                      <Button onClick={handleSave} type="primary">
+                        Save
+                      </Button>
+                      <Button onClick={handleDelete} type="default">
+                        Delete
+                      </Button>
+                    </Space>
                   </Space>
-                </Space>
-              )}
-              <Divider />
-              <Title level={5}>New Point</Title>
-              <Input
-                addonBefore="x:"
-                type="number"
-                placeholder="x"
-                value={addPointX}
-                onChange={(cur) => setAddPointX(+cur.target.value)}
-              />
-              <Input
-                addonBefore="y:"
-                placeholder="y"
-                type="number"
-                value={addPointY}
-                onChange={(cur) => setAddPointY(+cur.target.value)}
-              />
-              <Button
-                // onClick={() => setActionType(ActionType.Add)}
-                onClick={handleAddPoint}
-                type="primary"
-              >
-                Add Point
-              </Button>
-              <div style={{ height: "30vh" }} />
-            </Space>
-          </Card>
-          {/* <Button type="primary" onClick={handleGenerateJson}>
-            Generate json
-          </Button> */}
+                )}
+                <Divider />
+                <Title level={5}>New Point</Title>
+                <Input
+                  addonBefore="x:"
+                  type="number"
+                  placeholder="x"
+                  value={addPointX}
+                  onChange={(cur) => setAddPointX(+cur.target.value)}
+                />
+                <Input
+                  addonBefore="y:"
+                  placeholder="y"
+                  type="number"
+                  value={addPointY}
+                  onChange={(cur) => setAddPointY(+cur.target.value)}
+                />
+                <Button
+                  // onClick={() => setActionType(ActionType.Add)}
+                  onClick={handleAddPoint}
+                  type="primary"
+                >
+                  Add Point
+                </Button>
+                <div style={{ height: "30vh" }} />
+              </Space>
+            </Card>
+          ) : (
+            <Button>Revert</Button>
+          )}
         </Col>
       </Row>
       <Row justify="center">
