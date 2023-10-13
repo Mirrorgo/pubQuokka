@@ -1,5 +1,5 @@
 "use client";
-import { AccountType, currentUserAtom } from "@/store/global";
+import { AccountType, currentUserAtom, initialUser } from "@/store/global";
 import {
   Button,
   Col,
@@ -10,15 +10,21 @@ import {
   Select,
   Space,
   Typography,
+  message,
 } from "antd";
 import { useAtom } from "jotai";
 import React, { useState } from "react";
 import UserListTable from "./components/UserListTable";
+import { queryDeleteAccount } from "@/service/user";
+import { useRouter } from "next/navigation";
+import { MsgType } from "@/service/requestType";
+import InviteUserListTable from "./components/InviteUserListTable";
 
 const { Option } = Select;
 const { Text } = Typography;
 
 function Settings() {
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false); // 是否处于编辑模式
@@ -26,6 +32,7 @@ function Settings() {
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
     useState(false); // 控制删除确认弹窗可见性
   const [usernameToDelete, setUsernameToDelete] = useState(""); // 存储待删除账户的用户名
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   // TODO: 优化类型
   const onFinish = (values: any) => {
@@ -39,6 +46,9 @@ function Settings() {
     setIsEditing(true); // 进入编辑模式
     setVisible(true); // 打开弹窗
   };
+  const handleOpenInvite = () => {
+    setIsInviteModalOpen(true);
+  };
 
   const handleCancel = () => {
     setIsEditing(false); // 取消编辑模式
@@ -49,13 +59,27 @@ function Settings() {
     // 显示删除确认弹窗
     setDeleteConfirmationVisible(true);
   };
-  const handleDeleteConfirmation = () => {
+  const handleDeleteConfirmation = async () => {
     // 处理删除账户逻辑
     if (usernameToDelete === currentUser.userName) {
       // TODO： 顶部notification提示：删除成功
       console.log("Account deleted:", usernameToDelete);
-      setDeleteConfirmationVisible(false); // 关闭删除确认弹窗
+      // setDeleteConfirmationVisible(false); // 关闭删除确认弹窗
+      const res = await queryDeleteAccount({ userId: currentUser.userId });
+      if (res.data.msg === MsgType.SUCCESS) {
+        console.log("response", res);
+        message.success("delete successfully");
+        // TODO: 一个三秒弹窗，弹窗后转入login界面
+      } else {
+        message.error("delete failure");
+      }
+    } else {
+      message.error("Account does not match, please re-enter");
     }
+  };
+  const handleLogOut = () => {
+    router.push("/login");
+    setCurrentUser(initialUser);
   };
 
   const handleDeleteCancel = () => {
@@ -107,8 +131,11 @@ function Settings() {
               Delete Account
             </Button>
             {currentUser.accountType === AccountType.Organization && (
-              <Button type="primary">invite individual</Button>
+              <Button type="primary" onClick={handleOpenInvite}>
+                invite individual
+              </Button>
             )}
+            <Button onClick={handleLogOut}>Log Out</Button>
           </div>
         </Form>
       </div>
@@ -184,6 +211,13 @@ function Settings() {
           value={usernameToDelete}
           onChange={(e) => setUsernameToDelete(e.target.value)}
         />
+      </Modal>
+      <Modal
+        open={isInviteModalOpen}
+        onCancel={() => setIsInviteModalOpen(false)}
+        footer={null}
+      >
+        <InviteUserListTable />
       </Modal>
     </>
   );
