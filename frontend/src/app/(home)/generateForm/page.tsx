@@ -133,13 +133,16 @@ const GenarateForm: FC = () => {
             >
               <Row align={"middle"} justify={"center"}>
                 <Col>
+                {/* <p>From</p> */}
                 <InputNumber
+                prefix="From: "
                 value={downNumber}
                 onChange={handleDownNumberChange}
                 max={upNumber - 1} 
                 ></InputNumber>
-
+                <a>~</a>
                 <InputNumber
+                prefix="to: "
                 value={upNumber}
                 onChange={handleUpNumberChange}
                 min={downNumber + 1} 

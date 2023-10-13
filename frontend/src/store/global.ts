@@ -99,7 +99,26 @@ const currentEditingDataSetAtom = atom("0"); // 标识正在编辑的dataset,因
 //   ],
 // };
 
-const currentDataSetAtom = atomWithStorage<DataSet | {}>("currentDataSet", {});
+const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
+  dataSetId: "1",
+  title: "test1",
+  modelType: "",
+  defaultTop: "",
+  defaultBottom: "",
+  unit: "",
+  dataSetData: [
+    {
+      versionID: "1",
+      createdTime: "1998-08-26 17:27:53",
+      dataSet: [
+        {
+          x: "2014-07-29 18:25:47",
+          y: "20",
+        },
+      ],
+    },
+  ],
+});
 
 export { currentUserAtom, currentDataSetAtom };
 export { AccountType };

@@ -82,42 +82,18 @@ const dataSets: DataSet[] = [
   {
     dataSetId: "1",
     title: "test1",
-    configuration: {
-      type: "Cmkqck Llar Ydgpgbvoa",
-      point: 10,
-      unit: "Wophgmy Rifhtxega Ngrauou Ncuttn",
-      currentVersionId: "1",
-    },
-    datas: [
+    modelType: "",
+    defaultTop: "",
+    defaultBottom: "",
+    unit: "",
+    dataSetData: [
       {
-        versionId: "1",
-        time: "1998-08-26 17:27:53",
-        data: [
+        versionID: "1",
+        createdTime: "1998-08-26 17:27:53",
+        dataSet: [
           {
-            time: "2014-07-29 18:25:47",
-            value: "voluptate ipsum Duis",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    dataSetId: "2",
-    title: "test2",
-    configuration: {
-      type: "Cmkqck Llar Ydgpgbvoa",
-      point: 10,
-      unit: "Wophgmy Rifhtxega Ngrauou Ncuttn",
-      currentVersionId: "1",
-    },
-    datas: [
-      {
-        versionId: "1",
-        time: "1998-08-26 17:27:53",
-        data: [
-          {
-            time: "2014-07-29 18:25:47",
-            value: "voluptate ipsum Duis",
+            x: "2014-07-29 18:25:47",
+            y: "20",
           },
         ],
       },
