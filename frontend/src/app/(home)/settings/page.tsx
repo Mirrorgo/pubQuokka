@@ -147,10 +147,7 @@ function Settings() {
             margin: "auto",
           }}
         >
-          <Typography.Title level={5}>
-            Organization Member Management
-          </Typography.Title>
-          <UserListTable />
+          <UserListTable currentUser={currentUser} />
         </div>
       )}
 
