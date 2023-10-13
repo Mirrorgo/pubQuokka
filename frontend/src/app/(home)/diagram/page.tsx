@@ -13,6 +13,10 @@ import {
   Typography,
 } from "antd";
 import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
+import { currentDataSetAtom } from "@/store/global";
+// import { getCurrentVersionDataFromDataSet } from "@/utils/dataset";
+import { queryDataSetById, queryUpdateDataSet } from "@/service/dataset";
 // import Title from "antd/es/typography/Title";
 // import Title from "antd/es/skeleton/Title";
 const { Title, Paragraph, Text, Link } = Typography;
@@ -32,9 +36,39 @@ function Diagram() {
   const [actionType, setActionType] = useState<ActionType>(ActionType.Empty);
   const [addPointX, setAddPointX] = useState<number>(0);
   const [addPointY, setAddPointY] = useState<number>(0);
+
+  const handleUpdateDataSet = async () => {
+    // const res  = await queryUpdateDataSet()
+  };
   const handleGoBack = useCallback(() => {
     router.push("/generateForm");
   }, [router]);
+  const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
+  // init Chart data
+  // TODO:去掉try catch
+  // useEffect(() => {
+  //   // setCurrentDataSet(initialDataSet);
+  //   try {
+  //     // TODO: 需要改成从currentEditingDataSetAtom获取editing version
+  //     const initial = getCurrentVersionDataFromDataSet(currentDataSet);
+  //     // console.log("ini", initial);
+  //     setChartData(initial);
+  //   } catch (error) {
+  //     setChartData([
+  //       [1, 10],
+  //       [2, 20],
+  //     ]);
+  //   }
+  // }, [currentDataSet]);
+
+  // TODO 临时的初始化dataset方法
+  useEffect(() => {
+    async function initDataSet() {
+      const res = await queryDataSetById({ datasetId: "1" });
+      console.log(res.data.data, "1");
+    }
+    initDataSet();
+  }, []);
 
   const handleGenerateJson = useCallback(() => {
     messageApi.success("Json has been generated and sent!");
@@ -79,16 +113,6 @@ function Diagram() {
     setChartData(newData);
   };
 
-  useEffect(() => {
-    setChartData([
-      [0, 10],
-      [1, 20],
-      [2, 30],
-      [3, 40],
-      [4, 50],
-    ]);
-    return () => {};
-  }, []);
   return (
     <>
       {contextHolder}
@@ -124,6 +148,8 @@ function Diagram() {
               Data Point {index + 1}
             </div>
           ))} */}
+
+          <Button>Revert</Button>
           <Card style={{ width: "100%", height: "100%" }}>
             <Space direction="vertical">
               <Title level={3}>Edit Panel</Title>
@@ -171,12 +197,15 @@ function Diagram() {
               <div style={{ height: "30vh" }} />
             </Space>
           </Card>
+          {/* <Button type="primary" onClick={handleGenerateJson}>
+            Generate json
+          </Button> */}
         </Col>
       </Row>
       <Row justify="center">
         <Col>
-          <Button type="primary" onClick={handleGenerateJson}>
-            Generate json
+          <Button type="primary" onClick={handleUpdateDataSet}>
+            update dataset
           </Button>
         </Col>
       </Row>

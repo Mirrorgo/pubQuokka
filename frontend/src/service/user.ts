@@ -26,3 +26,14 @@ export async function login(data: object) {
 export async function signUp(data: object) {
   return axios.post<BaseResponse<string>>(requestUrl("/user/register"), data);
 }
+
+export async function queryDeleteAccount(data: object) {
+  return axios.post<BaseResponse<string>>(requestUrl("/user/delete"), data);
+}
+
+export async function queryDeleteMember(data: object) {
+  return axios.post<BaseResponse<string>>(
+    requestUrl("/user/deleteUserFromOrganization"),
+    data
+  );
+}

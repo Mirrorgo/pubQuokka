@@ -1,5 +1,3 @@
-import { MsgType } from "@/service/requestType";
-import { queryDeleteMember } from "@/service/user";
 import { Space, Table } from "antd";
 import React from "react";
 
@@ -9,13 +7,9 @@ type UserItem = {
 };
 const username = "username";
 
-function UserListTable() {
-  const handleDelete = async (record: UserItem) => {
+function InviteUserListTable() {
+  const handleInvite = (record: UserItem) => {
     console.log("record", record);
-    const res = await queryDeleteMember({ userId: record.userId });
-    if (res.data.msg === MsgType.SUCCESS) {
-      console.log();
-    }
   };
   const dataSource = [
     {
@@ -40,7 +34,7 @@ function UserListTable() {
       key: "action",
       render: (_: any, record: UserItem) => (
         <Space size="middle">
-          <a onClick={() => handleDelete(record)}>Delete</a>
+          <a onClick={() => handleInvite(record)}>Invite</a>
         </Space>
       ),
     },
@@ -49,4 +43,4 @@ function UserListTable() {
   return <Table dataSource={dataSource} columns={columns} />;
 }
 
-export default UserListTable;
+export default InviteUserListTable;
