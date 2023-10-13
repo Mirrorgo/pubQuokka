@@ -1,5 +1,6 @@
 import { cache } from "react";
 import "server-only";
+// 暂时先别用，好像有点问题
 
 export const preload = (id: string) => {
   void getBaseUserInfo(id);
