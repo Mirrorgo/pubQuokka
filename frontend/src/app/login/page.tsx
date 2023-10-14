@@ -22,7 +22,7 @@ const Login: FC = () => {
       const res = await login(values);
       if (res.data.msg === MsgType.SUCCESS) {
         setCurrentUser(res.data.data);
-        router.push("/dashboard");
+        router.push("/generateForm");
       } else if (res.data.msg === MsgType.FAILURE) {
         message.error("invalid username or password");
       } else {

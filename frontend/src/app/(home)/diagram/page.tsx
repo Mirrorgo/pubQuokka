@@ -16,7 +16,11 @@ import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { currentDataSetAtom, currentEditingDataSetAtom } from "@/store/global";
 // import { getCurrentVersionDataFromDataSet } from "@/utils/dataset";
-import { queryDataSetById, queryUpdateDataSet } from "@/service/dataset";
+import {
+  queryDataSetById,
+  queryRevertDataSet,
+  queryUpdateDataSet,
+} from "@/service/dataset";
 import { MsgType } from "@/service/requestType";
 // import Title from "antd/es/typography/Title";
 // import Title from "antd/es/skeleton/Title";
@@ -39,6 +43,7 @@ function Diagram() {
   const [editingVersionId, setEditingVersionId] = useAtom(
     currentEditingDataSetAtom
   );
+
   const [status, setStatus] = useState<"view" | "edit">("view");
   useEffect(() => {
     if (editingVersionId === "0") {
@@ -52,7 +57,7 @@ function Diagram() {
     // const res  = await queryUpdateDataSet()
   };
   const handleGoBack = useCallback(() => {
-    router.push("/generateForm");
+    router.back();
   }, [router]);
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
   // init Chart data
@@ -101,6 +106,17 @@ function Diagram() {
         title: e.target.value,
       };
     });
+  };
+  const handleRevert = async () => {
+    const res = await queryRevertDataSet({
+      dataSetId: currentDataSet.dataSetId,
+      currentVersionId: editingVersionId,
+    });
+    if (res.data.msg === MsgType.SUCCESS) {
+      message.success("revert success");
+    } else {
+      message.error(res.data.msg);
+    }
   };
 
   const handleDelete = () => {
@@ -224,7 +240,7 @@ function Diagram() {
               </Space>
             </Card>
           ) : (
-            <Button>Revert</Button>
+            <Button onClick={handleRevert}>Revert</Button>
           )}
         </Col>
       </Row>

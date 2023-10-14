@@ -14,3 +14,10 @@ export async function queryDataSetById(params: object) {
     params,
   });
 }
+
+export async function queryRevertDataSet(data: object) {
+  return axios.get<BaseResponse<DataSet>>(
+    requestUrl("/dataSet/revert", true),
+    data
+  );
+}

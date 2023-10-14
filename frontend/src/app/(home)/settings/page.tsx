@@ -19,6 +19,7 @@ import { queryDeleteAccount } from "@/service/user";
 import { useRouter } from "next/navigation";
 import { MsgType } from "@/service/requestType";
 import InviteUserListTable from "./components/InviteUserListTable";
+import GlobalModal from "./components/GlobalModal";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -27,6 +28,8 @@ function Settings() {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [form] = Form.useForm();
+  const [deleteAccountModalVisible, setDeleteAccountModalVisible] =
+    useState(false);
   const [isEditing, setIsEditing] = useState(false); // 是否处于编辑模式
   const [visible, setVisible] = useState(false); // 控制弹窗可见性
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
@@ -68,7 +71,7 @@ function Settings() {
       const res = await queryDeleteAccount({ userId: currentUser.userId });
       if (res.data.msg === MsgType.SUCCESS) {
         console.log("response", res);
-        message.success("delete successfully");
+        setDeleteAccountModalVisible(true);
         // TODO: 一个三秒弹窗，弹窗后转入login界面
       } else {
         message.error("delete failure");
@@ -218,6 +221,12 @@ function Settings() {
       >
         <InviteUserListTable />
       </Modal>
+      {/* deleteAccountModal */}
+      <GlobalModal
+        visible={deleteAccountModalVisible}
+        setVisible={setDeleteAccountModalVisible}
+        clickOk={handleLogOut}
+      />
     </>
   );
 }
