@@ -140,7 +140,7 @@ const GenarateForm: FC = () => {
                 onChange={handleDownNumberChange}
                 max={upNumber - 1} 
                 ></InputNumber>
-                <a>~</a>
+                <a>～</a>
                 <InputNumber
                 prefix="to: "
                 value={upNumber}

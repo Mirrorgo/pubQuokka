@@ -10,7 +10,7 @@ function Page({ params }: { params: { dataSetId: string } }) {
       testPage{params.dataSetId}
       <div>
         <div>{currentDataSet.title}</div>
-        <div>{currentDataSet.configuration.type}</div>
+        <div>{currentDataSet.modelType}</div>
       </div>
     </>
   );
