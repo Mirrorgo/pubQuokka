@@ -17,6 +17,7 @@ import {
 import type { SliderMarks } from "antd/es/slider";
 import React, { FC, useState } from "react";
 import dayjs from "dayjs";
+import { queryModelList } from "@/service/model";
 import { useRouter } from "next/navigation";
 
 const layout = {
