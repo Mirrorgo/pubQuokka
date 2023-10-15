@@ -16,7 +16,9 @@ export default function HomeLayout({
   const handleTest = async () => {
     // console.log(currentUser, "currentUser");
     // TODO 测试用
-    const res = await queryDataSetById({ userId: "1" });
+    const res = await queryDataSetById({
+      dataSetID: "02b6d57a-110d-4a5a-8dab-128636495ed6",
+    });
     console.log(res.data.data);
   };
   return (

@@ -10,7 +10,7 @@ export async function queryUpdateDataSet(data: object) {
 }
 
 export async function queryDataSetById(params: object) {
-  return axios.get<BaseResponse<DataSet>>(requestUrl("/dataset/get", true), {
+  return axios.get<BaseResponse<DataSet>>(requestUrl("/dataSet/get"), {
     params,
   });
 }

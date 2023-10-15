@@ -45,13 +45,14 @@ function Diagram() {
   );
 
   const [status, setStatus] = useState<"view" | "edit">("view");
+
   useEffect(() => {
     if (editingVersionId === "0") {
       setStatus("edit");
     } else {
       setStatus("view");
     }
-  }, [editingVersionId]);
+  }, []);
 
   const handleUpdateDataSet = async () => {
     // const res  = await queryUpdateDataSet()
@@ -80,7 +81,10 @@ function Diagram() {
   // TODO 临时的初始化dataset方法
   useEffect(() => {
     async function initDataSet() {
-      const res = await queryDataSetById({ datasetId: "1" });
+      console.log("2");
+      const res = await queryDataSetById({
+        dataSetID: "02b6d57a-110d-4a5a-8dab-128636495ed6",
+      });
       console.log(res.data.data, "1");
       if (res.data.msg === MsgType.SUCCESS) {
         setCurrentDataSet(res.data.data);
