@@ -13,8 +13,9 @@ import {
   Button,
   Drawer,
   Modal,
+  notification
 } from "antd";
-import { LikeOutlined, MessageOutlined, StarOutlined } from "@ant-design/icons";
+import { SmileOutlined } from '@ant-design/icons';
 import React, { FC, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DescriptionsProps } from "antd";
@@ -81,42 +82,18 @@ const dataSets: DataSet[] = [
   {
     dataSetId: "1",
     title: "test1",
-    configuration: {
-      type: "Cmkqck Llar Ydgpgbvoa",
-      point: 10,
-      unit: "Wophgmy Rifhtxega Ngrauou Ncuttn",
-      currentVersionId: "1",
-    },
-    datas: [
+    modelType: "",
+    defaultTop: "",
+    defaultBottom: "",
+    unit: "",
+    dataSetData: [
       {
-        versionId: "1",
-        time: "1998-08-26 17:27:53",
-        data: [
+        versionID: "1",
+        createdTime: "1998-08-26 17:27:53",
+        dataSet: [
           {
-            time: "2014-07-29 18:25:47",
-            value: "voluptate ipsum Duis",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    dataSetId: "2",
-    title: "test2",
-    configuration: {
-      type: "Cmkqck Llar Ydgpgbvoa",
-      point: 10,
-      unit: "Wophgmy Rifhtxega Ngrauou Ncuttn",
-      currentVersionId: "1",
-    },
-    datas: [
-      {
-        versionId: "1",
-        time: "1998-08-26 17:27:53",
-        data: [
-          {
-            time: "2014-07-29 18:25:47",
-            value: "voluptate ipsum Duis",
+            x: "2014-07-29 18:25:47",
+            y: "20",
           },
         ],
       },
@@ -193,6 +170,7 @@ const MyDataset: FC<{
   };
   const showModal = () => {
     setIsModalOpen(true);
+    console.log("111")
   };
 
   const handleCancel = () => {
@@ -207,13 +185,17 @@ const MyDataset: FC<{
     setOpen(false);
   };
 
-  const hadleShare = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    }, 3000);
-  };
+
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = () => {
+    api.open({
+      message: 'Successfully',
+      description:
+        'You have already shared the dataset to User Choosen',
+      icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+    });
+  }
+
 
   return (
     <div>
@@ -299,43 +281,61 @@ const MyDataset: FC<{
           }}
           dataSource={ShareMembers}
           // footer={}
-          renderItem={(item, index) => (
-            <List.Item
-              key={item.name}
-              // actions={[
-              //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-              //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-              //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-              // ]}
-              actions={[
-                <Button
-                  key="submit"
-                  type="primary"
-                  loading={loading}
-                  onClick={hadleShare}
-                >
-                  Share
-                </Button>,
-              ]}
-            >
-              <List.Item.Meta
-                avatar={
-                  <Avatar
-                    src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`}
-                  />
-                }
-                title={item.name}
-              ></List.Item.Meta>
-            </List.Item>
-          )}
+          // renderItem={(item, index) => (
+          //   <List.Item
+          //     key={item.name}
+          //     // actions={[
+          //     //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+          //     //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+          //     //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+          //     // ]}
+          //     actions={[
+          //       <Button key="submit" type="primary" loading={loading} onClick={hadleShare}>
+          //         Share
+          //       </Button>
+          //     ]
+          //     }>
+          //     <List.Item.Meta
+          //       avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`} />}
+          //       title={item.name}></List.Item.Meta>
+          //   </List.Item>
+          // )}
+          renderItem={(item, index) => {
+            const [loading, setLoading] = useState(false);
+            const hadleShare = () => {
+              setLoading(true);
+              setTimeout(() => {
+                setLoading(false);
+                setOpen(false);
+                setIsModalOpen(false);
+                openNotification();
+              }, 2000);
+
+            }
+            return (
+              <List.Item
+                key={item.name}
+                // actions={[
+                //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
+                //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+                //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+                // ]}
+                actions={[
+                  <Button key="submit" type="primary" loading={loading} onClick={hadleShare}>
+                    Share
+                  </Button>
+                ]
+                }>
+                <List.Item.Meta
+                  avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`} />}
+                  title={item.name}></List.Item.Meta>
+              </List.Item>
+            )
+
+          }}
         ></List>
-        <Card title="Share Code" bordered={false}>
-          <Row>
-            <p>QOJIUTBN312</p>
-            <Button type="primary">Press to copy</Button>
-          </Row>
-        </Card>
       </Modal>
+      {contextHolder} 
     </div>
   );
 };

@@ -18,3 +18,10 @@ export async function queryRevertDataSet(data: object) {
     data
   );
 }
+
+export async function createDataSetByRequirement(data: object) {
+  return axios.post<BaseResponse<Object>>(
+    requestUrl("/dataSet/generate",true),
+    data
+  )
+}

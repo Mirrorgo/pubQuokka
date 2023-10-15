@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
 enum AccountType {
@@ -32,6 +32,14 @@ type DataElement = {
 type DataItem = {
   x: string;
   y: string;
+};
+
+type Model = {
+  modelID: string;
+  modelName: string;
+  defaultUp: string;
+  defaultDown: string;
+  unit: string;
 };
 
 interface BaseResponse<T> {
@@ -101,15 +109,42 @@ const currentEditingDataSetAtom = atom<string>("0"); // 标识正在编辑的dat
 // };
 
 const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
-  dataSetData: [],
   dataSetId: "1",
-  defaultBottom: "1",
-  defaultTop: "10",
-  modelType: "type1",
-  title: "",
-  unit: "%",
+  title: "test1",
+  modelType: "",
+  defaultTop: "",
+  defaultBottom: "",
+  unit: "",
+  dataSetData: [
+    {
+      versionID: "1",
+      createdTime: "1998-08-26 17:27:53",
+      dataSet: [
+        {
+          x: "2014-07-29 18:25:47",
+          y: "20",
+        },
+      ],
+    },
+  ],
 });
 
-export { currentUserAtom, currentDataSetAtom, currentEditingDataSetAtom };
+// const allModelListAtom = atomWithStorage<Model>('ModelList', {
+//   modelID: "",
+//   modelName: "",
+//   defaultUp: "",
+//   defaultDown: "",
+//   unit: ""
+// });
+const allModelListAtom = atomWithStorage<Model[]>("ModelList", []);
+
+export { currentUserAtom, currentDataSetAtom, allModelListAtom };
 export { AccountType };
-export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem };
+export type {
+  BaseResponse,
+  DataSet,
+  UserInfoType,
+  DataElement,
+  DataItem,
+  Model,
+};
