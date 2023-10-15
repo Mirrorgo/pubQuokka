@@ -19,10 +19,10 @@ import React, { FC, useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { queryModelList } from "@/service/model";
 import { Model, allModelListAtom, DataSet } from "@/store/global";
-import {createDataSetByRequirement} from "@/service/dataset";
+import { createDataSetByRequirement } from "@/service/dataset";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
-import type { DatePickerProps, RangePickerProps } from 'antd/es/date-picker';
+import type { DatePickerProps, RangePickerProps } from "antd/es/date-picker";
 import { currentDataSetAtom } from "@/store/global";
 
 const layout = {
@@ -37,7 +37,7 @@ const layout = {
 };
 
 const marks: SliderMarks = {
-  0: "0"
+  0: "0",
 };
 
 const { RangePicker } = DatePicker;
@@ -57,15 +57,19 @@ const GenarateForm: FC = () => {
   };
   const [selectedValue, setSelectedValue] = useState<number>(1);
   const onModelChange = (value: string) => {
-    setDownNumber(parseInt(Object.values(allModelList)[parseInt(value)-1].defaultDown));
-    setUpNumber(parseInt(Object.values(allModelList)[parseInt(value)-1].defaultUp));
-    setModelUnit(Object.values(allModelList)[parseInt(value)-1].unit);
-    setModelType(Object.values(allModelList)[parseInt(value)-1].modelName);
+    setDownNumber(
+      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultDown)
+    );
+    setUpNumber(
+      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultUp)
+    );
+    setModelUnit(Object.values(allModelList)[parseInt(value) - 1].unit);
+    setModelType(Object.values(allModelList)[parseInt(value) - 1].modelName);
   };
 
-  const onChange  = (value: string) => {
+  const onChange = (value: string) => {
     console.log(`selected ${value}`);
-  }
+  };
   const handleGenerateBlank = () => {
     console.log("generate blank");
   };
@@ -81,49 +85,54 @@ const GenarateForm: FC = () => {
   const [dailyStep, setDailyStep] = useState(dayjs("2023/09/07", dateFormat));
   const [modelType, setModelType] = useState("");
   const [trend, setTrend] = useState("Up");
-  const [timeRange, setTimeRange] = useState<string[] | string>(["2023/09/07", "2023/09/08"]);
-  const handleDownNumberChange = (value: number|null) => {
+  const [timeRange, setTimeRange] = useState<string[] | string>([
+    "2023/09/07",
+    "2023/09/08",
+  ]);
+  const handleDownNumberChange = (value: number | null) => {
     if (value !== null && value < upNumber) {
       setDownNumber(value);
     }
   };
 
-  const handleUpNumberChange = (value: number|null) => {
+  const handleUpNumberChange = (value: number | null) => {
     if (value !== null && value > downNumber) {
       setUpNumber(value);
     }
   };
 
-  const handlePointNumberChange = (value: number|null) => {
+  const handlePointNumberChange = (value: number | null) => {
     if (value !== null && value > downNumber) {
       setPointNumber(value);
     }
   };
 
-  const changeDailyStep  = (value: any|null) => {
+  const changeDailyStep = (value: any | null) => {
     if (value !== null) {
       setDailyStep(value);
     }
   };
 
-  const onTrendChange = (value: string|null) => {
+  const onTrendChange = (value: string | null) => {
     if (value !== null) {
       setTrend(value);
     }
   };
 
   const changeRange = (
-    value: DatePickerProps['value'] | RangePickerProps['value'],
-    dateString: [string, string] | string,
+    value: DatePickerProps["value"] | RangePickerProps["value"],
+    dateString: [string, string] | string
   ) => {
-    console.log('Selected Time: ', value);
-    console.log('Formatted Selected Time: ', dateString);
+    console.log("Selected Time: ", value);
+    console.log("Formatted Selected Time: ", dateString);
     setTimeRange(dateString);
   };
-  
-  const onOk = (value: DatePickerProps['value'] | RangePickerProps['value']) => {
-    console.log('onOk: ', value);
-  }
+
+  const onOk = (
+    value: DatePickerProps["value"] | RangePickerProps["value"]
+  ) => {
+    console.log("onOk: ", value);
+  };
   const [allModelList, setAllModelList] = useAtom(allModelListAtom);
   const modelArray = allModelList;
   useEffect(() => {
@@ -132,12 +141,10 @@ const GenarateForm: FC = () => {
       // setAllModelList(() => ({
       //   list: [res.data.data],
       // }));
-      setAllModelList((res.data.data as unknown as Model[]));
+      setAllModelList(res.data.data as unknown as Model[]);
     }
     initModelList();
-    
-  }, []);
-
+  }, [setAllModelList]);
 
   // console.log(Object.values(allModelList),"111")
   // const modelOptions = Object.values(allModelList).map((options) => ({
@@ -146,8 +153,8 @@ const GenarateForm: FC = () => {
   // }));
   const modelOptions = allModelList.map((options) => ({
     value: options.modelID,
-    label: options.modelName
-  }))
+    label: options.modelName,
+  }));
 
   const requestForm = {
     dailyStep: dailyStep,
@@ -158,19 +165,19 @@ const GenarateForm: FC = () => {
     timeEnd: timeRange[0],
     timeStart: timeRange[1],
     trend: trend,
-  }
+  };
 
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
   const Genarate = () => {
     const res = createDataSetByRequirement(requestForm);
-    console.log(res);
-    res.then(response => {
+    console.log(res, "1212");
+    res.then((response) => {
       const data = response.data.data;
       console.log(data); // 这里输出包含数据的对象
       setCurrentDataSet(data as DataSet);
-      console.log(currentDataSet.title)
+      console.log(currentDataSet.title);
     });
-  }
+  };
 
   return (
     <div>
@@ -206,7 +213,7 @@ const GenarateForm: FC = () => {
             </Form.Item>
             <Form.Item label="Trend">
               <Select
-              // todo change it to api
+                // todo change it to api
                 defaultValue="up"
                 onChange={onTrendChange}
                 options={[
@@ -231,21 +238,21 @@ const GenarateForm: FC = () => {
             >
               <Row align={"middle"} justify={"center"}>
                 <Col>
-                {/* <p>From</p> */}
-                <InputNumber
-                prefix="From: "
-                value={downNumber}
-                onChange={handleDownNumberChange}
-                max={upNumber - 1} 
-                ></InputNumber>
-                <a>～</a>
-                <InputNumber
-                prefix="to: "
-                addonAfter={modelUnit}
-                value={upNumber}
-                onChange={handleUpNumberChange}
-                min={downNumber + 1} 
-                ></InputNumber>
+                  {/* <p>From</p> */}
+                  <InputNumber
+                    prefix="From: "
+                    value={downNumber}
+                    onChange={handleDownNumberChange}
+                    max={upNumber - 1}
+                  ></InputNumber>
+                  <a>～</a>
+                  <InputNumber
+                    prefix="to: "
+                    addonAfter={modelUnit}
+                    value={upNumber}
+                    onChange={handleUpNumberChange}
+                    min={downNumber + 1}
+                  ></InputNumber>
                 </Col>
                 {/* <Col span={20}>
                   {/* <Slider
@@ -253,7 +260,7 @@ const GenarateForm: FC = () => {
                     defaultValue={[90, 99]}
                     range={{ draggableTrack: true }}
                   ></Slider> */}
-                  {/* <Slider
+                {/* <Slider
                     marks={marks}
                     defaultValue={[90, 99]}
                     handleLineWidthHover={2}
@@ -262,7 +269,7 @@ const GenarateForm: FC = () => {
                     handleSizeHover={8}
                     range={{ draggableTrack: true }}
                   ></Slider> */}
-                  {/* <Slider
+                {/* <Slider
                     marks={marks}
                     defaultValue={[90, 99]}
                     dotsize={4}
@@ -322,8 +329,8 @@ const GenarateForm: FC = () => {
                     </Form.Item>
                     <Form.Item label="Points:">
                       <InputNumber
-                      value={pointNumber}
-                      onChange={handlePointNumberChange}
+                        value={pointNumber}
+                        onChange={handlePointNumberChange}
                       ></InputNumber>
                     </Form.Item>
                   </Form>
