@@ -8,11 +8,15 @@ interface DraggableLineChartProps {
   setEditingDataIndex: React.Dispatch<React.SetStateAction<number | null>>;
   editValue: number | null;
   setEditValue: React.Dispatch<React.SetStateAction<number | null>>;
+  boundary: {
+    max: number;
+    min: number;
+  };
 }
-const boundary = {
-  max: 70,
-  min: 5,
-};
+// const boundary = {
+//   max: 70,
+//   min: 5,
+// };
 
 const DraggableLineChart: FC<DraggableLineChartProps> = ({
   data,
@@ -21,6 +25,7 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
   setEditingDataIndex,
   editValue,
   setEditValue,
+  boundary,
 }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
 
@@ -43,6 +48,7 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
       const option = {
         xAxis: {
           type: "value",
+          scale: true, // 启用自适应横轴坐标轴
         },
         yAxis: {
           type: "value",
@@ -61,7 +67,7 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
                   // },
                   label: {
                     position: "end",
-                    formatter: "上限: 15",
+                    formatter: `Upper Limit: ${boundary.max}`,
                   },
                 },
                 {
@@ -71,7 +77,7 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
                   // },
                   label: {
                     position: "end",
-                    formatter: "下限: 25",
+                    formatter: `Lower Limit: ${boundary.min}`,
                   },
                 },
               ],

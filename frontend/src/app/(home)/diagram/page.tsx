@@ -22,6 +22,10 @@ import {
   queryUpdateDataSet,
 } from "@/service/dataset";
 import { MsgType } from "@/service/requestType";
+import {
+  convertDataToObjectToTwoDimensionalArray,
+  convertTwoDimensionalArrayToDataObject,
+} from "@/utils/dataset";
 // import Title from "antd/es/typography/Title";
 // import Title from "antd/es/skeleton/Title";
 const { Title, Paragraph, Text, Link } = Typography;
@@ -34,17 +38,21 @@ enum ActionType {
 
 function Diagram() {
   const router = useRouter();
-  const [chartData, setChartData] = useState<number[][]>([[]]);
+  const [chartData, setChartData] = useState<number[][]>([[]]); // all图表上的数据点
   const [editingDataIndex, setEditingDataIndex] = useState<number | null>(null);
-  const [editValue, setEditValue] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState<number | null>(null); //edit point的时候y的值
   const [actionType, setActionType] = useState<ActionType>(ActionType.Empty);
+  // addpoint
   const [addPointX, setAddPointX] = useState<number>(0);
   const [addPointY, setAddPointY] = useState<number>(0);
-  const [editingVersionId, setEditingVersionId] = useAtom(
-    currentEditingDataSetAtom
-  );
-
+  const [editingVersionId] = useAtom(currentEditingDataSetAtom); //读取到正在读取的版本id
+  // view只能revert
   const [status, setStatus] = useState<"view" | "edit">("view");
+  const [title, setTitle] = useState("");
+  const [boundary, setBoundary] = useState({
+    max: 0,
+    min: 0,
+  });
 
   useEffect(() => {
     if (editingVersionId === "0") {
@@ -52,10 +60,21 @@ function Diagram() {
     } else {
       setStatus("view");
     }
-  }, []);
+  }, [editingVersionId]);
 
   const handleUpdateDataSet = async () => {
-    // const res  = await queryUpdateDataSet()
+    const res = await queryUpdateDataSet({
+      // dataSetId: currentDataSet.dataSetId,
+      dataSetID: "847ea019-f66c-4cfa-a01b-6c5ed51246cf",
+      data: convertTwoDimensionalArrayToDataObject(chartData),
+      title: title,
+    });
+    if (res.data.msg === MsgType.SUCCESS) {
+      console.log("ooo", res.data.data);
+    } else {
+      message.error(res.data.msg);
+    }
+    console.log("dataset", chartData, title);
   };
   const handleGoBack = useCallback(() => {
     router.back();
@@ -83,11 +102,24 @@ function Diagram() {
     async function initDataSet() {
       console.log("2");
       const res = await queryDataSetById({
-        dataSetID: "02b6d57a-110d-4a5a-8dab-128636495ed6",
+        dataSetID: "847ea019-f66c-4cfa-a01b-6c5ed51246cf",
       });
       console.log(res.data.data, "1");
       if (res.data.msg === MsgType.SUCCESS) {
         setCurrentDataSet(res.data.data);
+        const initData = res.data.data;
+        const datas = initData.dataSetData;
+        const { length } = datas;
+        const newChartData = convertDataToObjectToTwoDimensionalArray(
+          datas[length - 1].dataSet
+        ).sort((a, b) => a[0] - b[0]);
+        setTitle(res.data.data.title);
+        setChartData(newChartData);
+        setBoundary({
+          max: +initData.defaultTop,
+          min: +initData.defaultBottom,
+        });
+        // if (datas) console.log(res.data.data.dataSetData, "new");
       }
     }
     initDataSet();
@@ -104,12 +136,7 @@ function Diagram() {
   };
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentDataSet((pre) => {
-      return {
-        ...pre,
-        title: e.target.value,
-      };
-    });
+    setTitle(e.target.value);
   };
   const handleRevert = async () => {
     const res = await queryRevertDataSet({
@@ -161,7 +188,7 @@ function Diagram() {
         </Button>
         <Input
           style={{ width: "30vw" }}
-          value={currentDataSet.title}
+          value={title}
           onChange={handleChangeTitle}
         />
       </Space>
@@ -174,6 +201,7 @@ function Diagram() {
             setEditingDataIndex={setEditingDataIndex}
             editValue={editValue}
             setEditValue={setEditValue}
+            boundary={boundary}
           />
         </Col>
         <Col span={6}>

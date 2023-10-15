@@ -29,7 +29,7 @@ export default function HomeLayout({
           {/* <Col className={styles["nav-item"]}>
             <div onClick={() => router.push("/dashboard")}>Dashboard</div>
           </Col> */}
-          <Button onClick={handleTest}>test</Button>
+          {/* <Button onClick={handleTest}>test</Button> */}
           <Col
             className={styles["nav-item"]}
             onClick={() => router.push("/generateForm")}
