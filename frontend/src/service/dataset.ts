@@ -17,7 +17,7 @@ export async function queryDataSetById(data: object) {
 }
 
 export async function createDataSetByRequirement(data: object) {
-  return axios.post<BaseResponse<Object>>(
+  return axios.post<BaseResponse<DataSet>>(
     requestUrl("/dataSet/generate",true),
     data
   )
