@@ -1,5 +1,5 @@
-import { atom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { atom,useAtom } from "jotai";
+import { atomWithStorage  } from "jotai/utils";
 
 enum AccountType {
   Individual = "individual",
@@ -32,6 +32,14 @@ type DataElement = {
 type DataItem = {
   x: string;
   y: string;
+};
+
+type Model = {
+  modelID: string;
+  modelName: string;
+  defaultUp: string;
+  defaultDown: string;
+  unit: string;
 };
 
 interface BaseResponse<T> {
@@ -120,6 +128,18 @@ const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
   ],
 });
 
-export { currentUserAtom, currentDataSetAtom };
+// const allModelListAtom = atomWithStorage<Model>('ModelList', {
+//   modelID: "",
+//   modelName: "",
+//   defaultUp: "",
+//   defaultDown: "",
+//   unit: ""
+// });
+const allModelListAtom = atomWithStorage<Model[]>('ModelList', []);
+
+
+
+
+export { currentUserAtom, currentDataSetAtom, allModelListAtom };
 export { AccountType };
-export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem };
+export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem, Model };

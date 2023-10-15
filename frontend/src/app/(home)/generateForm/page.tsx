@@ -15,9 +15,11 @@ import {
   InputNumber,
 } from "antd";
 import type { SliderMarks } from "antd/es/slider";
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { queryModelList } from "@/service/model";
+import { Model, allModelListAtom } from "@/store/global";
+import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 
 const layout = {
@@ -51,9 +53,15 @@ const GenarateForm: FC = () => {
     router.push("/home");
   };
   const [selectedValue, setSelectedValue] = useState<number>(1);
-  const onChange = (value: string) => {
-    console.log(`selected ${value}`);
+  const onModelChange = (value: string) => {
+    setDownNumber(parseInt(Object.values(allModelList)[parseInt(value)-1].defaultDown));
+    setUpNumber(parseInt(Object.values(allModelList)[parseInt(value)-1].defaultUp))
+    setModelUnit(Object.values(allModelList)[parseInt(value)-1].unit)
   };
+
+  const onChange  = (value: string) => {
+    console.log(`selected ${value}`);
+  }
   const handleGenerateBlank = () => {
     console.log("generate blank");
   };
@@ -64,6 +72,8 @@ const GenarateForm: FC = () => {
 
   const [downNumber, setDownNumber] = useState(1);
   const [upNumber, setUpNumber] = useState(2);
+  const [pointNumber, setPointNumber] = useState(10);
+  const [modelUnit, setModelUnit] = useState("%");
 
   const handleDownNumberChange = (value: number|null) => {
     if (value !== null && value < upNumber) {
@@ -76,6 +86,38 @@ const GenarateForm: FC = () => {
       setUpNumber(value);
     }
   };
+
+  const handlePointNumberChange = (value: number|null) => {
+    if (value !== null && value > downNumber) {
+      setPointNumber(value);
+    }
+  }
+
+  const [allModelList, setAllModelList] = useAtom(allModelListAtom);
+  const modelArray = allModelList;
+  useEffect(() => {
+    async function initModelList() {
+      const res = await queryModelList();
+      // setAllModelList(() => ({
+      //   list: [res.data.data],
+      // }));
+      setAllModelList((res.data.data as unknown as Model[]));
+    }
+    initModelList();
+    
+  }, []);
+
+
+  // console.log(Object.values(allModelList),"111")
+  // const modelOptions = Object.values(allModelList).map((options) => ({
+  //   value: (options as unknown as { modelID: string }).modelID,
+  //   label: (options as unknown as { modelName: string }).modelName,
+  // }));
+  const modelOptions = allModelList.map((options) => ({
+    value: options.modelID,
+    label: options.modelName
+  }))
+
   return (
     <div>
       <Row align={"middle"} justify={"center"}>
@@ -93,18 +135,19 @@ const GenarateForm: FC = () => {
               <Select
                 showSearch
                 placeholder="Select a Model Type"
-                onChange={onChange}
+                onChange={onModelChange}
                 onSearch={onSearch}
-                options={[
-                  {
-                    value: "Blood Oxygen Saturation",
-                    label: "Blood Oxygen Saturation",
-                  },
-                  {
-                    value: "Electrocardiography",
-                    label: "Electrocardiography",
-                  },
-                ]}
+                // options={[
+                //   {
+                //     value: "Blood Oxygen Saturation",
+                //     label: "Blood Oxygen Saturation",
+                //   },
+                //   {
+                //     value: "Electrocardiography",
+                //     label: "Electrocardiography",
+                //   },
+                // ]}
+                options={modelOptions}
               />
             </Form.Item>
             <Form.Item label="Trend">
@@ -144,6 +187,7 @@ const GenarateForm: FC = () => {
                 <a>～</a>
                 <InputNumber
                 prefix="to: "
+                addonAfter={modelUnit}
                 value={upNumber}
                 onChange={handleUpNumberChange}
                 min={downNumber + 1} 
@@ -220,7 +264,10 @@ const GenarateForm: FC = () => {
                       />
                     </Form.Item>
                     <Form.Item label="Points:">
-                      <InputNumber></InputNumber>
+                      <InputNumber
+                      value={pointNumber}
+                      onChange={handlePointNumberChange}
+                      ></InputNumber>
                     </Form.Item>
                   </Form>
                 </TabPane>
