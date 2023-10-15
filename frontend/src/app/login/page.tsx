@@ -87,9 +87,12 @@ const Login: FC = () => {
               </Form.Item>
               {!isLogin && (
                 <>
-                  <Form.Item name="role" label="Account Type">
+                  <Form.Item
+                    name="role"
+                    label="Account Type"
+                    initialValue={AccountType.Individual}
+                  >
                     <Select
-                      defaultValue={AccountType.Individual}
                       options={[
                         { value: AccountType.Individual, label: "Individual" },
                         {
