@@ -37,8 +37,8 @@ type DataItem = {
 type Model = {
   modelID: string;
   modelType: string;
-  defaultUp: string;
-  defaultDown: string;
+  defaultTop: string;
+  defaultBottom: string;
   unit: string;
 };
 

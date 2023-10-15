@@ -60,10 +60,10 @@ const GenarateForm: FC = () => {
   const [selectedValue, setSelectedValue] = useState<number>(1);
   const onModelChange = (value: string) => {
     setDownNumber(
-      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultDown)
+      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultBottom)
     );
     setUpNumber(
-      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultUp)
+      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultTop)
     );
     setModelUnit(Object.values(allModelList)[parseInt(value) - 1].unit);
     setModelType(Object.values(allModelList)[parseInt(value) - 1].modelType);
@@ -159,16 +159,26 @@ const GenarateForm: FC = () => {
     label: options.modelType,
   }));
 
-  const requestForm = {
-    dailyStep: dailyStep,
-    datasetBottom: downNumber.toString(),
-    datasetTop: upNumber.toString(),
-    modelType: modelType,
-    numPoints: pointNumber,
-    timeEnd: timeRange[0],
-    timeStart: timeRange[1],
-    trend: trend,
+  type requestForm = {
+    // dailyStep: dailyStep,
+    // datasetBottom: downNumber.toString(),
+    // datasetTop: upNumber.toString(),
+    // modelType: modelType,
+    // numPoints: pointNumber,
+    // timeEnd: timeRange[0],
+    // timeStart: timeRange[1],
+    // trend: trend,
+    dailyStep: any;
+    datasetBottom: string;
+    datasetTop: string;
+    modelType: string;
+    numPoints: string;
+    timeEnd: string;
+    timeStart: string;
+    trend: string;
   };
+
+  const [req, setReq] = useState<requestForm>();
 
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
   const Genarate = () => {
@@ -179,9 +189,19 @@ const GenarateForm: FC = () => {
       // }));
       setAllModelList(res.data.data as unknown as Model[]);
     }
+    const requestBody = {
+      dailyStep: dailyStep,
+      datasetBottom: downNumber,
+      datasetTop: upNumber,
+      modelType: modelType,
+      numPoints: pointNumber,
+      timeEnd: timeRange[1],
+      timeStart: timeRange[0],
+      trend: trend,
+    };
     if (modelType != "") {
-      const res = createDataSetByRequirement(requestForm);
-      console.log(res);
+      const res = createDataSetByRequirement(requestBody);
+      console.log(requestBody, "body");
       res.then((response) => {
         const data = response.data.data;
         console.log(data); // 这里输出包含数据的对象
@@ -204,9 +224,20 @@ const GenarateForm: FC = () => {
       // }));
       setAllModelList(res.data.data as unknown as Model[]);
     }
+    const requestBody = {
+      dailyStep: dailyStep,
+      datasetBottom: downNumber.toString(),
+      datasetTop: upNumber.toString(),
+      modelType: modelType,
+      numPoints: pointNumber,
+      timeEnd: timeRange[0],
+      timeStart: timeRange[1],
+      trend: trend,
+    };
     if (modelType != "") {
-      const res = createDataSetByRequirement(requestForm);
-      console.log(res);
+      const res = createDataSetByRequirement(requestBody);
+
+      console.log(requestBody, "body");
       res.then((response) => {
         const data: DataSet = response.data.data;
         console.log(data); // 这里输出包含数据的对象
