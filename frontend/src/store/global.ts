@@ -36,7 +36,7 @@ type DataItem = {
 
 type Model = {
   modelID: string;
-  modelName: string;
+  modelType: string;
   defaultUp: string;
   defaultDown: string;
   unit: string;
@@ -138,7 +138,29 @@ const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
 // });
 const allModelListAtom = atomWithStorage<Model[]>("ModelList", []);
 
-export { currentUserAtom, currentDataSetAtom, allModelListAtom };
+const blankDataSetAtom = atomWithStorage<DataSet>("blankDataSet", {
+  dataSetId: "1",
+  title: "test1",
+  modelType: "",
+  defaultTop: "",
+  defaultBottom: "",
+  unit: "",
+  dataSetData: [
+    {
+      versionID: "1",
+      createdTime: "1998-08-26 17:27:53",
+      dataSet: [],
+    },
+  ],
+});
+
+export {
+  currentUserAtom,
+  currentDataSetAtom,
+  allModelListAtom,
+  blankDataSetAtom,
+  currentEditingDataSetAtom,
+};
 export { AccountType };
 export type {
   BaseResponse,

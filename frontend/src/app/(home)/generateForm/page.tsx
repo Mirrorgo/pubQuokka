@@ -13,7 +13,9 @@ import {
   Space,
   Tabs,
   InputNumber,
+  notification,
 } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import type { SliderMarks } from "antd/es/slider";
 import React, { FC, useState, useEffect } from "react";
 import dayjs from "dayjs";
@@ -64,7 +66,7 @@ const GenarateForm: FC = () => {
       parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultUp)
     );
     setModelUnit(Object.values(allModelList)[parseInt(value) - 1].unit);
-    setModelType(Object.values(allModelList)[parseInt(value) - 1].modelName);
+    setModelType(Object.values(allModelList)[parseInt(value) - 1].modelType);
   };
 
   const onChange = (value: string) => {
@@ -80,7 +82,7 @@ const GenarateForm: FC = () => {
 
   const [downNumber, setDownNumber] = useState(1);
   const [upNumber, setUpNumber] = useState(2);
-  const [pointNumber, setPointNumber] = useState(10);
+  const [pointNumber, setPointNumber] = useState(0);
   const [modelUnit, setModelUnit] = useState("%");
   const [dailyStep, setDailyStep] = useState(dayjs("2023/09/07", dateFormat));
   const [modelType, setModelType] = useState("");
@@ -110,6 +112,7 @@ const GenarateForm: FC = () => {
   const changeDailyStep = (value: any | null) => {
     if (value !== null) {
       setDailyStep(value);
+      console.log(value, "step");
     }
   };
 
@@ -138,9 +141,9 @@ const GenarateForm: FC = () => {
   useEffect(() => {
     async function initModelList() {
       const res = await queryModelList();
-      // setAllModelList(() => ({
       //   list: [res.data.data],
       // }));
+      console.log(res.data.data);
       setAllModelList(res.data.data as unknown as Model[]);
     }
     initModelList();
@@ -153,7 +156,7 @@ const GenarateForm: FC = () => {
   // }));
   const modelOptions = allModelList.map((options) => ({
     value: options.modelID,
-    label: options.modelName,
+    label: options.modelType,
   }));
 
   const requestForm = {
@@ -169,16 +172,65 @@ const GenarateForm: FC = () => {
 
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
   const Genarate = () => {
-    const res = createDataSetByRequirement(requestForm);
-    console.log(res, "1212");
-    res.then((response) => {
-      const data = response.data.data;
-      console.log(data); // 这里输出包含数据的对象
-      setCurrentDataSet(data as DataSet);
-      console.log(currentDataSet.title);
-    });
+    async function generateModel() {
+      const res = await queryModelList();
+      // setAllModelList(() => ({
+      //   list: [res.data.data],
+      // }));
+      setAllModelList(res.data.data as unknown as Model[]);
+    }
+    if (modelType != "") {
+      const res = createDataSetByRequirement(requestForm);
+      console.log(res);
+      res.then((response) => {
+        const data = response.data.data;
+        console.log(data); // 这里输出包含数据的对象
+        setCurrentDataSet(data as DataSet);
+        console.log(currentDataSet.title);
+      });
+      generateModel();
+      router.push("/diagram");
+    } else {
+      // 如果 selectedValue 为空，可以显示错误消息或采取其他操作
+      console.error("Please select a value");
+      openNotification();
+    }
+  };
+  const genarateBlank = () => {
+    async function generateModel() {
+      const res = await queryModelList();
+      // setAllModelList(() => ({
+      //   list: [res.data.data],
+      // }));
+      setAllModelList(res.data.data as unknown as Model[]);
+    }
+    if (modelType != "") {
+      const res = createDataSetByRequirement(requestForm);
+      console.log(res);
+      res.then((response) => {
+        const data: DataSet = response.data.data;
+        console.log(data); // 这里输出包含数据的对象
+        data.dataSetData = [];
+        setCurrentDataSet(data as DataSet);
+        console.log(currentDataSet.dataSetData, "aaa");
+      });
+      generateModel();
+      router.push("/diagram");
+    } else {
+      // 如果 selectedValue 为空，可以显示错误消息或采取其他操作
+      console.error("Please select a value");
+      openNotification();
+    }
   };
 
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = () => {
+    api.open({
+      message: "Error",
+      description: "Please choose a specific model type",
+      icon: <ExclamationCircleOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
   return (
     <div>
       <Row align={"middle"} justify={"center"}>
@@ -355,6 +407,7 @@ const GenarateForm: FC = () => {
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
+                  onClick={genarateBlank}
                 >
                   Generate Blank
                 </Button>
@@ -364,6 +417,7 @@ const GenarateForm: FC = () => {
         </Col>
         <Col span={2}></Col>
       </Row>
+      {contextHolder}
     </div>
   );
 };
