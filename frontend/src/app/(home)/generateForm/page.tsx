@@ -18,9 +18,12 @@ import type { SliderMarks } from "antd/es/slider";
 import React, { FC, useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { queryModelList } from "@/service/model";
-import { Model, allModelListAtom } from "@/store/global";
+import { Model, allModelListAtom, DataSet } from "@/store/global";
+import {createDataSetByRequirement} from "@/service/dataset";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
+import type { DatePickerProps, RangePickerProps } from 'antd/es/date-picker';
+import { currentDataSetAtom } from "@/store/global";
 
 const layout = {
   labelCol: {
@@ -55,8 +58,9 @@ const GenarateForm: FC = () => {
   const [selectedValue, setSelectedValue] = useState<number>(1);
   const onModelChange = (value: string) => {
     setDownNumber(parseInt(Object.values(allModelList)[parseInt(value)-1].defaultDown));
-    setUpNumber(parseInt(Object.values(allModelList)[parseInt(value)-1].defaultUp))
-    setModelUnit(Object.values(allModelList)[parseInt(value)-1].unit)
+    setUpNumber(parseInt(Object.values(allModelList)[parseInt(value)-1].defaultUp));
+    setModelUnit(Object.values(allModelList)[parseInt(value)-1].unit);
+    setModelType(Object.values(allModelList)[parseInt(value)-1].modelName);
   };
 
   const onChange  = (value: string) => {
@@ -74,7 +78,10 @@ const GenarateForm: FC = () => {
   const [upNumber, setUpNumber] = useState(2);
   const [pointNumber, setPointNumber] = useState(10);
   const [modelUnit, setModelUnit] = useState("%");
-
+  const [dailyStep, setDailyStep] = useState(dayjs("2023/09/07", dateFormat));
+  const [modelType, setModelType] = useState("");
+  const [trend, setTrend] = useState("Up");
+  const [timeRange, setTimeRange] = useState<string[] | string>(["2023/09/07", "2023/09/08"]);
   const handleDownNumberChange = (value: number|null) => {
     if (value !== null && value < upNumber) {
       setDownNumber(value);
@@ -91,8 +98,32 @@ const GenarateForm: FC = () => {
     if (value !== null && value > downNumber) {
       setPointNumber(value);
     }
-  }
+  };
 
+  const changeDailyStep  = (value: any|null) => {
+    if (value !== null) {
+      setDailyStep(value);
+    }
+  };
+
+  const onTrendChange = (value: string|null) => {
+    if (value !== null) {
+      setTrend(value);
+    }
+  };
+
+  const changeRange = (
+    value: DatePickerProps['value'] | RangePickerProps['value'],
+    dateString: [string, string] | string,
+  ) => {
+    console.log('Selected Time: ', value);
+    console.log('Formatted Selected Time: ', dateString);
+    setTimeRange(dateString);
+  };
+  
+  const onOk = (value: DatePickerProps['value'] | RangePickerProps['value']) => {
+    console.log('onOk: ', value);
+  }
   const [allModelList, setAllModelList] = useAtom(allModelListAtom);
   const modelArray = allModelList;
   useEffect(() => {
@@ -117,6 +148,29 @@ const GenarateForm: FC = () => {
     value: options.modelID,
     label: options.modelName
   }))
+
+  const requestForm = {
+    dailyStep: dailyStep,
+    datasetBottom: downNumber.toString(),
+    datasetTop: upNumber.toString(),
+    modelType: modelType,
+    numPoints: pointNumber,
+    timeEnd: timeRange[0],
+    timeStart: timeRange[1],
+    trend: trend,
+  }
+
+  const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
+  const Genarate = () => {
+    const res = createDataSetByRequirement(requestForm);
+    console.log(res);
+    res.then(response => {
+      const data = response.data.data;
+      console.log(data); // 这里输出包含数据的对象
+      setCurrentDataSet(data as DataSet);
+      console.log(currentDataSet.title)
+    });
+  }
 
   return (
     <div>
@@ -154,18 +208,18 @@ const GenarateForm: FC = () => {
               <Select
               // todo change it to api
                 defaultValue="up"
-                onChange={onChange}
+                onChange={onTrendChange}
                 options={[
                   {
-                    value: "up",
+                    value: "Up",
                     label: "Up",
                   },
                   {
-                    value: "down",
+                    value: "Down",
                     label: "Down",
                   },
                   {
-                    value: "random",
+                    value: "Random",
                     label: "Random",
                   },
                 ]}
@@ -243,11 +297,14 @@ const GenarateForm: FC = () => {
                           dayjs("2023/09/08", dateFormat),
                         ]}
                         format={dateFormat}
+                        onChange={changeRange}
                       />
                     </Form.Item>
                     <Form.Item label="Step:">
                       <TimePicker
                         defaultValue={dayjs("12:08:23", "HH:mm:ss")}
+                        value={dailyStep}
+                        onChange={changeDailyStep}
                       />
                     </Form.Item>
                   </Form>
@@ -280,6 +337,7 @@ const GenarateForm: FC = () => {
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
+                  onClick={Genarate}
                 >
                   Generate
                 </Button>

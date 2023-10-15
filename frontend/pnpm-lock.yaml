@@ -28,7 +28,7 @@ dependencies:
     version: 3.7.8(react@18.2.0)
   antd:
     specifier: ^5.8.6
-    version: 5.10.0(react-dom@18.2.0)(react@18.2.0)
+    version: 5.10.1(react-dom@18.2.0)(react@18.2.0)
   axios:
     specifier: ^1.5.0
     version: 1.5.1
@@ -603,8 +603,8 @@ packages:
       color-convert: 2.0.1
     dev: false
 
-  /antd@5.10.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-qeyfMhcDK2QeuKaC/OCjNCPrJb+3vrBHvVK2swRHsxJvKFSpRerMCShOn/I3CXogrVJazPMluGhy0FQlcHQ4pw==}
+  /antd@5.10.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-alcBmeH4oAdmEdBs6EORH3onRFRjGYRkWtVjPyJxlTIfLILb/+S5Y+ZqisV3AobC8mlj6T3RV8aKG9ic6PgtzQ==}
     peerDependencies:
       react: '>=16.9.0'
       react-dom: '>=16.9.0'
@@ -629,7 +629,7 @@ packages:
       rc-dialog: 9.3.3(react-dom@18.2.0)(react@18.2.0)
       rc-drawer: 6.5.2(react-dom@18.2.0)(react@18.2.0)
       rc-dropdown: 4.1.0(react-dom@18.2.0)(react@18.2.0)
-      rc-field-form: 1.38.2(react-dom@18.2.0)(react@18.2.0)
+      rc-field-form: 1.39.0(react-dom@18.2.0)(react@18.2.0)
       rc-image: 7.3.1(react-dom@18.2.0)(react@18.2.0)
       rc-input: 1.2.1(react-dom@18.2.0)(react@18.2.0)
       rc-input-number: 8.1.0(react-dom@18.2.0)(react@18.2.0)
@@ -2422,8 +2422,8 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /rc-field-form@1.38.2(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-O83Oi1qPyEv31Sg+Jwvsj6pXc8uQI2BtIAkURr5lvEYHVggXJhdU/nynK8wY1gbw0qR48k731sN5ON4egRCROA==}
+  /rc-field-form@1.39.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-V7Wk7uji1jBsUGGgP788H9rpFy55HLiD4lywTlktUGjK7EgW5dt+mq1MPbtCpPRMzs83vZBW4SOChOmCACz4WA==}
     engines: {node: '>=8.x'}
     peerDependencies:
       react: '>=16.9.0'
