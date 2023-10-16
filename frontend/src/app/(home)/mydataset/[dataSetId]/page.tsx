@@ -8,10 +8,12 @@ function Page({ params }: { params: { dataSetId: string } }) {
   console.log(currentDataSet,"title")
   return (
     <>
-      {params.dataSetId}
+      {/* {params.dataSetId} */}
       <div>
-        <div>{currentDataSet.title}</div>
-        <div>{currentDataSet.modelType}</div>
+        <div>Title: {currentDataSet.title}</div>
+        <div>ModelType: {currentDataSet.modelType}</div>
+        <div>Range of the Dataset: {currentDataSet.defaultBottom} ~ {currentDataSet.defaultTop}</div>
+        <div>Unit: {currentDataSet.unit}</div>
       </div>
     </>
   );

@@ -217,10 +217,11 @@ const MyDataset: FC<{
             </Tabs>
           </Row>
           <Divider></Divider>
-          {children}
+          
           <Paragraph style={{ fontSize: "x-large", fontWeight: "bold" }}>
             {currentDataSet.title}
           </Paragraph>
+          {children}
           <Row align={"middle"} justify={"start"}>
             {/* <Descriptions
           title="Review Configuration"
