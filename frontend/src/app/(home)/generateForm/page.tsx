@@ -17,10 +17,10 @@ import {
 } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import type { SliderMarks } from "antd/es/slider";
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect} from "react";
 import dayjs from "dayjs";
 import { queryModelList } from "@/service/model";
-import { Model, allModelListAtom, DataSet } from "@/store/global";
+import { Model, allModelListAtom, DataSet, currentUserAtom } from "@/store/global";
 import { createDataSetByRequirement } from "@/service/dataset";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
@@ -157,10 +157,10 @@ const GenarateForm: FC = () => {
         defaultBottom: bottom,
         unit: item.unit
       }
-      modelData.concat(modelItem)
+      modelData.push(modelItem)
     })
-
-      setAllModelList(modelData as unknown as Model[]);
+      console.log(modelData,"modeldata")
+      setAllModelList(modelData);
     }
     initModelList();
   }, [setAllModelList]);
@@ -185,8 +185,8 @@ const GenarateForm: FC = () => {
     // timeStart: timeRange[1],
     // trend: trend,
     dailyStep: string;
-    datasetBottom: number;
-    datasetTop: number;
+    dataSetBottom: number;
+    dataSetTop: number;
     modelType: string;
     numPoints: number;
     timeEnd: string;
@@ -194,9 +194,10 @@ const GenarateForm: FC = () => {
     trend: string;
   };
 
-  const [req, setReq] = useState<requestForm>();
+  // const [req, setReq] = useState<requestForm>();
 
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const Genarate = () => {
     async function generateModel() {
       const res = await queryModelList();
@@ -205,10 +206,10 @@ const GenarateForm: FC = () => {
       // }));
       setAllModelList(res.data.data as unknown as Model[]);
     }
-    const requestBody = {
+    const requestBody:requestForm = {
       dailyStep: dailyStep,
-      datasetBottom: downNumber,
-      datasetTop: upNumber,
+      dataSetBottom: downNumber,
+      dataSetTop: upNumber,
       modelType: modelType,
       numPoints: pointNumber,
       timeEnd: timeRange[1],
@@ -216,7 +217,8 @@ const GenarateForm: FC = () => {
       trend: trend,
     };
     if (modelType != "") {
-      const res = createDataSetByRequirement(requestBody);
+      const userID = currentUser.userId;
+      const res = createDataSetByRequirement(userID,requestBody);
       console.log(requestBody, "body");
       res.then((response) => {
         const data = response.data.data;
@@ -251,7 +253,8 @@ const GenarateForm: FC = () => {
       trend: trend,
     };
     if (modelType != "") {
-      const res = createDataSetByRequirement(requestBody);
+      const userId = currentUser.userId;
+      const res = createDataSetByRequirement(userId,requestBody);
 
       console.log(requestBody, "body");
       res.then((response) => {
