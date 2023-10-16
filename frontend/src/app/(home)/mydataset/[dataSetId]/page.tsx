@@ -5,10 +5,10 @@ import React from "react";
 
 function Page({ params }: { params: { dataSetId: string } }) {
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
-  console.log(currentDataSet.title,"title")
+  console.log(currentDataSet,"title")
   return (
     <>
-      testPage{params.dataSetId}
+      {params.dataSetId}
       <div>
         <div>{currentDataSet.title}</div>
         <div>{currentDataSet.modelType}</div>
