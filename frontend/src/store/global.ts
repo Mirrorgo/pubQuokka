@@ -16,7 +16,7 @@ type UserInfoType = {
 
 type DataSet = {
   dataSetData: DataElement[] | [];
-  dataSetId: string;
+  dataSetID: string;
   defaultBottom: string;
   defaultTop: string;
   modelType: string;
@@ -109,7 +109,7 @@ const currentEditingDataSetAtom = atom<string>("0"); // 标识正在编辑的dat
 // };
 
 const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
-  dataSetId: "1",
+  dataSetID: "1",
   title: "test1",
   modelType: "",
   defaultTop: "",
@@ -121,7 +121,7 @@ const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
       createdTime: "1998-08-26 17:27:53",
       dataSet: [
         {
-          x: "2014-07-29 18:25:47",
+          x: "1617258260000",
           y: "20",
         },
       ],

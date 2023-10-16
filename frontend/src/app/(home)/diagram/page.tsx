@@ -14,7 +14,11 @@ import {
 } from "antd";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
-import { currentDataSetAtom, currentEditingDataSetAtom } from "@/store/global";
+import {
+  DataSet,
+  currentDataSetAtom,
+  currentEditingDataSetAtom,
+} from "@/store/global";
 // import { getCurrentVersionDataFromDataSet } from "@/utils/dataset";
 import {
   queryDataSetById,
@@ -64,9 +68,10 @@ function Diagram() {
   }, [editingVersionId]);
 
   const handleUpdateDataSet = async () => {
+    console.log("?", currentDataSet.dataSetID, currentDataSet);
     const res = await queryUpdateDataSet({
       // dataSetId: currentDataSet.dataSetId,
-      dataSetID: "61b71025-d49d-4745-86ac-7272eb7bbcf1",
+      dataSetID: currentDataSet.dataSetID,
       dataSet: convertTwoDimensionalArrayToDataObject(chartData),
       title: title,
     });
@@ -102,31 +107,36 @@ function Diagram() {
 
   // TODO 临时的初始化dataset方法
   useEffect(() => {
+    console.log(currentDataSet, "wow");
     async function initDataSet() {
-      console.log("2");
-      const res = await queryDataSetById({
-        dataSetID: "61b71025-d49d-4745-86ac-7272eb7bbcf1",
-      });
-      console.log(res.data.data, "1");
-      if (res.data.msg === MsgType.SUCCESS) {
-        setCurrentDataSet(res.data.data);
-        const initData = res.data.data;
+      // console.log("2");
+      // const res = await queryDataSetById({
+      //   dataSetID: "61b71025-d49d-4745-86ac-7272eb7bbcf1",
+      // });
+      // console.log(res.data.data, "1");
+
+      const init = (data: DataSet) => {
+        setCurrentDataSet(data);
+        const initData = data;
         const datas = initData.dataSetData;
         const { length } = datas;
         const newChartData = convertDataToObjectToTwoDimensionalArray(
           datas[length - 1].dataSet
         ).sort((a, b) => a[0] - b[0]);
-        setTitle(res.data.data.title);
+        setTitle(data.title);
         setChartData(newChartData);
         setBoundary({
           max: +initData.defaultTop,
           min: +initData.defaultBottom,
         });
-        // if (datas) console.log(res.data.data.dataSetData, "new");
-      }
+      };
+      init(currentDataSet);
+      // if (res.data.msg === MsgType.SUCCESS) {
+      //   init(res.data.data);
+      // }
     }
     initDataSet();
-  }, [setCurrentDataSet]);
+  }, []);
 
   const handleSave = () => {
     if (editingDataIndex !== null && editValue !== null) {
@@ -143,7 +153,7 @@ function Diagram() {
   };
   const handleRevert = async () => {
     const res = await queryRevertDataSet({
-      dataSetId: currentDataSet.dataSetId,
+      dataSetId: currentDataSet.dataSetID,
       currentVersionId: editingVersionId,
     });
     if (res.data.msg === MsgType.SUCCESS) {
