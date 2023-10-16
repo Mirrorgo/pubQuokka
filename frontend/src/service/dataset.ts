@@ -21,13 +21,13 @@ export async function queryRevertDataSet(data: object) {
 
 export async function createDataSetByRequirement(userID: string, requestBody: Object) {
   return axios.post<BaseResponse<DataSet>>(
-    requestUrl(`/dataSet/generate?userID=${userID}`,true),
+    requestUrl(`/dataSet/generate?userID=${userID}`),
     requestBody
   )
 }
 
 export async function getDataSetListByUserID(userID:string) {
   return axios.get<BaseResponse<DataSetListItem[]>>(
-    requestUrl(`/dataSet/list?userID=${userID}`,true)
+    requestUrl(`/dataSet/list?userID=${userID}`)
   )
 }
