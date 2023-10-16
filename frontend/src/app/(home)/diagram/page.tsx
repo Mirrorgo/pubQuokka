@@ -31,6 +31,7 @@ import {
   convertTwoDimensionalArrayToDataObject,
 } from "@/utils/dataset";
 import TimestampDatePicker from "./components/TimestampDatePicker";
+import dayjs from "dayjs";
 // import Title from "antd/es/typography/Title";
 // import Title from "antd/es/skeleton/Title";
 const { Title, Paragraph, Text, Link } = Typography;
@@ -48,7 +49,7 @@ function Diagram() {
   const [editValue, setEditValue] = useState<number | null>(null); //edit point的时候y的值
   const [actionType, setActionType] = useState<ActionType>(ActionType.Empty);
   // addpoint
-  const [addPointX, setAddPointX] = useState<number>(0);
+  const [addPointX, setAddPointX] = useState<number>(+dayjs().unix());
   const [addPointY, setAddPointY] = useState<number>(0);
   const [editingVersionId] = useAtom(currentEditingDataSetAtom); //读取到正在读取的版本id
   // view只能revert
@@ -68,7 +69,6 @@ function Diagram() {
   }, [editingVersionId]);
 
   const handleUpdateDataSet = async () => {
-    console.log("?", currentDataSet.dataSetID, currentDataSet);
     const res = await queryUpdateDataSet({
       // dataSetId: currentDataSet.dataSetId,
       dataSetID: currentDataSet.dataSetID,
@@ -82,30 +82,12 @@ function Diagram() {
     } else {
       message.error(res.data.msg);
     }
-    console.log("dataset", chartData, title);
   };
   const handleGoBack = useCallback(() => {
     router.back();
   }, [router]);
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
-  // init Chart data
-  // TODO:去掉try catch
-  // useEffect(() => {
-  //   // setCurrentDataSet(initialDataSet);
-  //   try {
-  //     // TODO: 需要改成从currentEditingDataSetAtom获取editing version
-  //     const initial = getCurrentVersionDataFromDataSet(currentDataSet);
-  //     // console.log("ini", initial);
-  //     setChartData(initial);
-  //   } catch (error) {
-  //     setChartData([
-  //       [1, 10],
-  //       [2, 20],
-  //     ]);
-  //   }
-  // }, [currentDataSet]);
 
-  // TODO 临时的初始化dataset方法
   useEffect(() => {
     console.log(currentDataSet, "wow");
     async function initDataSet() {
@@ -120,15 +102,19 @@ function Diagram() {
         const initData = data;
         const datas = initData.dataSetData;
         const { length } = datas;
-        const newChartData = convertDataToObjectToTwoDimensionalArray(
-          datas[length - 1].dataSet
-        ).sort((a, b) => a[0] - b[0]);
         setTitle(data.title);
-        setChartData(newChartData);
         setBoundary({
           max: +initData.defaultTop,
           min: +initData.defaultBottom,
         });
+        if (length === 0) {
+          setChartData([]);
+        } else {
+          const newChartData = convertDataToObjectToTwoDimensionalArray(
+            datas[length - 1].dataSet
+          ).sort((a, b) => a[0] - b[0]);
+          setChartData(newChartData);
+        }
       };
       init(currentDataSet);
       // if (res.data.msg === MsgType.SUCCESS) {
@@ -189,7 +175,8 @@ function Diagram() {
     }
     newData.splice(insertIndex, 0, [addPointX, addPointY]);
     console.log("look", newData);
-    setAddPointX(0);
+    const initX = +dayjs().unix();
+    setAddPointX(initX);
     setAddPointY(0);
     setChartData(newData);
   };
@@ -209,6 +196,8 @@ function Diagram() {
       <Row style={{ width: "100vw", height: "500px" }}>
         <Col span={18}>
           <DraggableLineChart
+            unit={currentDataSet.unit}
+            // TODO:替换为真实的
             data={chartData}
             setData={setChartData}
             editingDataIndex={editingDataIndex}
@@ -219,24 +208,6 @@ function Diagram() {
           />
         </Col>
         <Col span={6}>
-          {/* {chartData.map((point, index) => (
-            <div
-              key={index}
-              onClick={() => {
-                setEditingDataIndex(index);
-                setEditValue(point[1]);
-              }}
-              style={{
-                padding: "10px",
-                backgroundColor:
-                  editingDataIndex === index ? "lightgray" : "white",
-                cursor: "pointer",
-              }}
-            >
-              Data Point {index + 1}
-            </div>
-          ))} */}
-
           {status === "edit" ? (
             <Card style={{ width: "100%", height: "100%" }}>
               <Space direction="vertical">
