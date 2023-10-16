@@ -198,16 +198,16 @@ const MyDataset: FC<{
   }
   // getDataSetListByUserID
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const userID = currentUser.userId;
   useEffect(() => {
+    console.log(currentUser.userId,"userID inside Effect")
     async function initDataSetList() {
-      const res = await getDataSetListByUserID(userID);
+      const res = await getDataSetListByUserID(currentUser.userId);
       //   list: [res.data.data],
       // }));
-      console.log(res.data.data);
+      console.log(res.data.data,"getDataSet");
     }
     initDataSetList();
-  },[])
+  },[currentUser.userId])
   return (
     <div>
       <Row align={"middle"} justify={"start"}>
@@ -312,11 +312,9 @@ const MyDataset: FC<{
           //   </List.Item>
           // )}
           renderItem={(item, index) => {
-            const [loading, setLoading] = useState(false);
             const hadleShare = () => {
               setLoading(true);
               setTimeout(() => {
-                setLoading(false);
                 setOpen(false);
                 setIsModalOpen(false);
                 openNotification();

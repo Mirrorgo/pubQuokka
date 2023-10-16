@@ -25,6 +25,6 @@ export async function createDataSetByRequirement(userID: string, requestBody: Ob
 
 export async function getDataSetListByUserID(userID:string) {
   return axios.get<BaseResponse<DataSetList>>(
-    requestUrl(`/dataSet/list${userID}`,true)
+    requestUrl(`/dataSet/list?userID=${userID}`,true)
   )
 }
