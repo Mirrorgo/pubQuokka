@@ -80,7 +80,7 @@ const GenarateForm: FC = () => {
   const [upNumber, setUpNumber] = useState(2);
   const [pointNumber, setPointNumber] = useState(0);
   const [modelUnit, setModelUnit] = useState("%");
-  const [dailyStep, setDailyStep] = useState(dayjs("2023/09/07", dateFormat));
+  const [dailyStep, setDailyStep] = useState(dayjs("2023/09/07", "HH:mm:ss").format("HH:mm:ss"));
   const [modelType, setModelType] = useState("");
   const [trend, setTrend] = useState("Up");
   const [timeRange, setTimeRange] = useState<string[] | string>(["2023/09/07", "2023/09/08"]);
@@ -162,7 +162,7 @@ const GenarateForm: FC = () => {
     // timeEnd: timeRange[0],
     // timeStart: timeRange[1],
     // trend: trend,
-    dailyStep: any,
+    dailyStep: string,
     datasetBottom: string,
     datasetTop: string,
     modelType: string,
@@ -389,7 +389,7 @@ const GenarateForm: FC = () => {
                     <Form.Item label="Step:">
                       <TimePicker
                         defaultValue={dayjs("12:08:23", "HH:mm:ss")}
-                        value={dailyStep}
+                        value={dayjs(dailyStep, "HH:mm:ss")}
                         onChange={changeDailyStep}
                       />
                     </Form.Item>
