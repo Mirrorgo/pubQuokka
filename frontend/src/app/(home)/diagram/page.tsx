@@ -136,7 +136,7 @@ function Diagram() {
       // }
     }
     initDataSet();
-  }, []);
+  }, [currentDataSet, setCurrentDataSet]);
 
   const handleSave = () => {
     if (editingDataIndex !== null && editValue !== null) {

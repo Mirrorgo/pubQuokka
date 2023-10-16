@@ -19,7 +19,7 @@ import { SmileOutlined } from '@ant-design/icons';
 import React, { FC, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DescriptionsProps } from "antd";
-import { DataSet, currentDataSetAtom, currentUserAtom } from "@/store/global";
+import { DataSet, DataSetListItem, currentDataSetAtom, currentUserAtom } from "@/store/global";
 import { useAtom } from "jotai";
 import { getDataSetListByUserID } from "@/service/dataset";
 
@@ -79,9 +79,9 @@ const ShareMembers = [
     name: "GLS",
   },
 ];
-const dataSets: DataSet[] = [
+let dataSets: DataSet[] = [
   {
-    dataSetId: "1",
+    dataSetID: "1",
     title: "test1",
     modelType: "",
     defaultTop: "",
@@ -165,7 +165,7 @@ const MyDataset: FC<{
   const [loading, setLoading] = useState(false);
   const showDetail = (dataSetId: any) => {
     console.log(dataSetId, "info");
-    const temp = dataSets.find((cur) => cur.dataSetId === dataSetId) as DataSet;
+    const temp = dataSets.find((cur) => cur.dataSetID === dataSetId) as DataSet;
     setCurrentDataSet(temp);
     router.push(`/mydataset/${dataSetId}`);
   };
@@ -198,16 +198,20 @@ const MyDataset: FC<{
   }
   // getDataSetListByUserID
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+  const [datasetData, setDatasetData] = useState<DataSetListItem[]>();
   useEffect(() => {
     console.log(currentUser.userId,"userID inside Effect")
     async function initDataSetList() {
       const res = await getDataSetListByUserID(currentUser.userId);
       //   list: [res.data.data],
       // }));
-      console.log(res.data.data,"getDataSet");
+      const dataSetList: DataSetListItem[] = res.data.data
+      setDatasetData(dataSetList);
     }
     initDataSetList();
   },[currentUser.userId])
+
+  console.log(datasetData,"datasetData")
   return (
     <div>
       <Row align={"middle"} justify={"start"}>
@@ -223,13 +227,14 @@ const MyDataset: FC<{
                 },
                 pageSize: 4,
               }}
-              dataSource={dataSets}
+              // dataSource={dataSets}
+              dataSource={datasetData}
               // footer={}
               renderItem={(item: any, index) => (
                 <List.Item
-                  key={item.dataSetId}
+                  key={item.dataSetID}
                   actions={[
-                    <a key={1} onClick={() => showDetail(item.dataSetId)}>
+                    <a key={1} onClick={() => showDetail(item.dataSetID)}>
                       Detail
                     </a>,
                     <a key={2} onClick={showDrawer}>

@@ -42,9 +42,9 @@ type Model = {
   unit: string;
 };
 
-type DataSetList = {
-  data: DataSetListItem[];
-}
+// type DataSetList = {
+//   data: DataSetListItem[];
+// }
 
 type DataSetListItem = {
   dataSetID: string;
@@ -154,15 +154,4 @@ export {
   currentEditingDataSetAtom,
 };
 export { AccountType };
-<<<<<<< HEAD
-export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem, Model, DataSetList };
-=======
-export type {
-  BaseResponse,
-  DataSet,
-  UserInfoType,
-  DataElement,
-  DataItem,
-  Model,
-};
->>>>>>> frontend/sprint3
+export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem, Model, DataSetListItem};

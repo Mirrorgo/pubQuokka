@@ -5,6 +5,7 @@ import React from "react";
 
 function Page({ params }: { params: { dataSetId: string } }) {
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
+  console.log(currentDataSet.title,"title")
   return (
     <>
       testPage{params.dataSetId}

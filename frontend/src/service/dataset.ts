@@ -1,4 +1,4 @@
-import { BaseResponse, DataSet, DataSetList } from "@/store/global";
+import { BaseResponse, DataSet, DataSetListItem} from "@/store/global";
 import { requestUrl } from "./requestUtils";
 import axios from "axios";
 
@@ -27,7 +27,7 @@ export async function createDataSetByRequirement(userID: string, requestBody: Ob
 }
 
 export async function getDataSetListByUserID(userID:string) {
-  return axios.get<BaseResponse<DataSetList>>(
+  return axios.get<BaseResponse<DataSetListItem[]>>(
     requestUrl(`/dataSet/list?userID=${userID}`,true)
   )
 }
