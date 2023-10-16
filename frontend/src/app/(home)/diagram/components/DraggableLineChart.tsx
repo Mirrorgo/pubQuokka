@@ -1,5 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
+import { formatData } from "../utils";
 
 interface DraggableLineChartProps {
   data: number[][]; // 所有data的值
@@ -49,6 +50,12 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
         xAxis: {
           type: "value",
           scale: true, // 启用自适应横轴坐标轴
+          axisLabel: {
+            formatter: function (value: string) {
+              // 调用 formatData 函数将时间戳转换为时间字符串
+              return formatData({ timestamp: value });
+            },
+          },
         },
         yAxis: {
           type: "value",
@@ -104,15 +111,26 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
             label: {
               show: true,
               formatter: function (params: any) {
-                return params.value.join(", ");
+                const newX = formatData({
+                  timestamp: `${params.value[0]}`,
+                });
+                const newY = params.value[1];
+                return "" + newX + ", " + newY;
               },
             },
             draggable: true,
             emphasis: {
               label: {
                 show: true,
+                // formatter: function (params: any) {
+                //   return params.value.join(", ");
+                // },
                 formatter: function (params: any) {
-                  return params.value.join(", ");
+                  const newX = formatData({
+                    timestamp: `${params.value[0]}`,
+                  });
+                  const newY = params.value[1];
+                  return "" + newX + ", " + newY;
                 },
               },
             },

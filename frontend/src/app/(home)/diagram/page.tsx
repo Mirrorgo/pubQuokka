@@ -26,6 +26,7 @@ import {
   convertDataToObjectToTwoDimensionalArray,
   convertTwoDimensionalArrayToDataObject,
 } from "@/utils/dataset";
+import TimestampDatePicker from "./components/TimestampDatePicker";
 // import Title from "antd/es/typography/Title";
 // import Title from "antd/es/skeleton/Title";
 const { Title, Paragraph, Text, Link } = Typography;
@@ -66,11 +67,13 @@ function Diagram() {
     const res = await queryUpdateDataSet({
       // dataSetId: currentDataSet.dataSetId,
       dataSetID: "61b71025-d49d-4745-86ac-7272eb7bbcf1",
-      data: convertTwoDimensionalArrayToDataObject(chartData),
+      dataSet: convertTwoDimensionalArrayToDataObject(chartData),
       title: title,
     });
     if (res.data.msg === MsgType.SUCCESS) {
-      console.log("ooo", res.data.data);
+      // console.log("ooo", res.data.data);
+      message.success("update dataset successfully");
+      // handleGoBack();
     } else {
       message.error(res.data.msg);
     }
@@ -175,6 +178,7 @@ function Diagram() {
       }
     }
     newData.splice(insertIndex, 0, [addPointX, addPointY]);
+    console.log("look", newData);
     setAddPointX(0);
     setAddPointY(0);
     setChartData(newData);
@@ -247,20 +251,34 @@ function Diagram() {
                 )}
                 <Divider />
                 <Title level={5}>New Point</Title>
-                <Input
-                  addonBefore="x:"
-                  type="number"
-                  placeholder="x"
-                  value={addPointX}
-                  onChange={(cur) => setAddPointX(+cur.target.value)}
-                />
-                <Input
-                  addonBefore="y:"
-                  placeholder="y"
-                  type="number"
-                  value={addPointY}
-                  onChange={(cur) => setAddPointY(+cur.target.value)}
-                />
+                <Row gutter={[8, 0]} align="middle">
+                  <Col>
+                    <span>x:</span>
+                  </Col>
+                  <Col flex="auto">
+                    {/* <Input
+                      type="number"
+                      placeholder="x"
+                      value={addPointX}
+                      onChange={(e) => setAddPointX(+e.target.value)}
+                    /> */}
+                    <TimestampDatePicker setPoint={setAddPointX} />
+                  </Col>
+                </Row>
+
+                <Row gutter={[8, 0]} align="middle">
+                  <Col>
+                    <span>y:</span>
+                  </Col>
+                  <Col flex="auto">
+                    <Input
+                      placeholder="y"
+                      type="number"
+                      value={addPointY}
+                      onChange={(e) => setAddPointY(+e.target.value)}
+                    />
+                  </Col>
+                </Row>
                 <Button
                   // onClick={() => setActionType(ActionType.Add)}
                   onClick={handleAddPoint}
