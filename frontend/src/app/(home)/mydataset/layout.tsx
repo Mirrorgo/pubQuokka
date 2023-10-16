@@ -22,33 +22,35 @@ import type { DescriptionsProps } from "antd";
 import { DataSet, DataSetListItem, currentDataSetAtom, currentEditingDataSetAtom, currentUserAtom } from "@/store/global";
 import { useAtom } from "jotai";
 import { getDataSetListByUserID, queryDataSetById } from "@/service/dataset";
+import { queryUsersByOrganization } from "@/service/user";
+import { MsgType } from "@/service/requestType";
 
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
 
 
-const ShareMembers = [
-  {
-    Avatar: 1,
-    name: "LWZ",
-  },
-  {
-    Avatar: 2,
-    name: "LC",
-  },
-  {
-    Avatar: 3,
-    name: "CSY",
-  },
-  {
-    Avatar: 4,
-    name: "WJS",
-  },
-  {
-    Avatar: 5,
-    name: "GLS",
-  },
-];
+// const ShareMembers = [
+//   {
+//     Avatar: 1,
+//     name: "LWZ",
+//   },
+//   {
+//     Avatar: 2,
+//     name: "LC",
+//   },
+//   {
+//     Avatar: 3,
+//     name: "CSY",
+//   },
+//   {
+//     Avatar: 4,
+//     name: "WJS",
+//   },
+//   {
+//     Avatar: 5,
+//     name: "GLS",
+//   },
+// ];
 let dataSets: DataSet[] = [
   {
     dataSetID: "1",
@@ -91,6 +93,9 @@ const MyDataset: FC<{
     const [open, setOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [shareMembers, setShareMembers] = useState<
+    { userId: string; username: string }[]
+  >([]);
     const showDetail = (dataSetId: string) => {
       console.log(dataSetId, "info");
       // const temp = dataSets.find((cur) => cur.dataSetID === dataSetId) as DataSet;
@@ -106,6 +111,15 @@ const MyDataset: FC<{
         router.push(`/mydataset/${dataSetId}`);
       };
       const showModal = () => {
+        async function getSharedMembers() {
+          const res = await queryUsersByOrganization({
+            organizationId: currentUser.organizationId,
+          });
+          if (res.data.msg === MsgType.SUCCESS) {
+            setShareMembers(res.data.data)
+          }
+        };
+        getSharedMembers();
         setIsModalOpen(true);
         console.log("111")
       };
@@ -272,7 +286,7 @@ const MyDataset: FC<{
                 },
                 pageSize: 4,
               }}
-              dataSource={ShareMembers}
+              dataSource={shareMembers}
               // footer={}
               // renderItem={(item, index) => (
               //   <List.Item
@@ -305,7 +319,7 @@ const MyDataset: FC<{
                 }
                 return (
                   <List.Item
-                    key={item.name}
+                    key={item.userId}
                     // actions={[
                     //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
                     //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
@@ -318,8 +332,8 @@ const MyDataset: FC<{
                     ]
                     }>
                     <List.Item.Meta
-                      avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${item.Avatar}`} />}
-                      title={item.name}></List.Item.Meta>
+                      avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=3 `} />}
+                      title={item.username}></List.Item.Meta>
                   </List.Item>
                 )
 
