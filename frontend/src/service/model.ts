@@ -3,7 +3,7 @@ import { requestUrl } from "./requestUtils";
 import axios from "axios";
 
 export async function queryModelList() {
-    return axios.get<BaseResponse<Model>>(
+    return axios.get<BaseResponse<Model[]>>(
       requestUrl("/model/list", true)
     );
   }

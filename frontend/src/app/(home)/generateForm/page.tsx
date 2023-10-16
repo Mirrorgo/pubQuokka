@@ -80,9 +80,9 @@ const GenarateForm: FC = () => {
     console.log("search:", value);
   };
 
-  const [downNumber, setDownNumber] = useState("1");
-  const [upNumber, setUpNumber] = useState("2");
-  const [pointNumber, setPointNumber] = useState("0");
+  const [downNumber, setDownNumber] = useState(1);
+  const [upNumber, setUpNumber] = useState(2);
+  const [pointNumber, setPointNumber] = useState(0);
   const [modelUnit, setModelUnit] = useState("%");
   const [dailyStep, setDailyStep] = useState(
     dayjs("2023/09/07", "HH:mm:ss").format("HH:mm:ss")
@@ -93,19 +93,19 @@ const GenarateForm: FC = () => {
     "2023/09/07",
     "2023/09/08",
   ]);
-  const handleDownNumberChange = (value: string | null) => {
-    if (value !== null && parseInt(value) < parseInt(upNumber)) {
+  const handleDownNumberChange = (value: number | null) => {
+    if (value !== null && value < upNumber) {
       setDownNumber(value);
     }
   };
 
-  const handleUpNumberChange = (value: string | null) => {
-    if (value !== null && parseInt(value) > parseInt(downNumber)) {
+  const handleUpNumberChange = (value: number | null) => {
+    if (value !== null && value > downNumber) {
       setUpNumber(value);
     }
   };
 
-  const handlePointNumberChange = (value: string | null) => {
+  const handlePointNumberChange = (value: number | null) => {
     if (value !== null) {
       setPointNumber(value);
     }
@@ -146,7 +146,21 @@ const GenarateForm: FC = () => {
       //   list: [res.data.data],
       // }));
       console.log(res.data.data);
-      setAllModelList(res.data.data as unknown as Model[]);
+      const modelData: Model[] = []
+      res.data.data.forEach((item)=>{
+        const top = +item.defaultTop;
+        const bottom = +item.defaultBottom;
+        const modelItem: Model = {
+        modelID: item.modelID,
+        modelType: item.modelType,
+        defaultTop: top,
+        defaultBottom: bottom,
+        unit: item.unit
+      }
+      modelData.concat(modelItem)
+    })
+
+      setAllModelList(modelData as unknown as Model[]);
     }
     initModelList();
   }, [setAllModelList]);
@@ -171,10 +185,10 @@ const GenarateForm: FC = () => {
     // timeStart: timeRange[1],
     // trend: trend,
     dailyStep: string;
-    datasetBottom: string;
-    datasetTop: string;
+    datasetBottom: number;
+    datasetTop: number;
     modelType: string;
-    numPoints: string;
+    numPoints: number;
     timeEnd: string;
     timeStart: string;
     trend: string;
@@ -328,7 +342,7 @@ const GenarateForm: FC = () => {
                     prefix="From: "
                     value={downNumber}
                     onChange={handleDownNumberChange}
-                    max={""+(parseInt(upNumber) - 1)}
+                    max={(upNumber-1)}
                   ></InputNumber>
                   <a>～</a>
                   <InputNumber
@@ -336,7 +350,7 @@ const GenarateForm: FC = () => {
                     addonAfter={modelUnit}
                     value={upNumber}
                     onChange={handleUpNumberChange}
-                    min={downNumber + 1}
+                    min={(downNumber+1)}
                   ></InputNumber>
                 </Col>
                 {/* <Col span={20}>
