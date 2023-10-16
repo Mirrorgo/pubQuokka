@@ -1,4 +1,4 @@
-import { BaseResponse, DataSet, DataSetListItem} from "@/store/global";
+import { BaseResponse, DataSet, DataSetListItem } from "@/store/global";
 import { requestUrl } from "./requestUtils";
 import axios from "axios";
 
@@ -12,22 +12,26 @@ export async function queryDataSetById(params: object) {
   });
 }
 
-export async function queryRevertDataSet(data: object) {
-  return axios.get<BaseResponse<DataSet>>(
-    requestUrl("/dataSet/revert", true),
-    data
+export async function queryRevertDataSet(params: object) {
+  return axios.post<BaseResponse<DataSet>>(
+    requestUrl("/dataSet/revert"),
+    null,
+    { params }
   );
 }
 
-export async function createDataSetByRequirement(userID: string, requestBody: Object) {
+export async function createDataSetByRequirement(
+  userID: string,
+  requestBody: Object
+) {
   return axios.post<BaseResponse<DataSet>>(
     requestUrl(`/dataSet/generate?userID=${userID}`),
     requestBody
-  )
+  );
 }
 
-export async function getDataSetListByUserID(userID:string) {
+export async function getDataSetListByUserID(userID: string) {
   return axios.get<BaseResponse<DataSetListItem[]>>(
     requestUrl(`/dataSet/list?userID=${userID}`)
-  )
+  );
 }

@@ -60,13 +60,18 @@ function Diagram() {
     min: 0,
   });
 
+  const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
   useEffect(() => {
-    if (editingVersionId === "0") {
+    const { length } = currentDataSet.dataSetData;
+    if (
+      editingVersionId === "0" ||
+      editingVersionId === currentDataSet.dataSetData[length - 1].versionID
+    ) {
       setStatus("edit");
     } else {
       setStatus("view");
     }
-  }, [editingVersionId]);
+  }, [currentDataSet.dataSetData, editingVersionId]);
 
   const handleUpdateDataSet = async () => {
     const res = await queryUpdateDataSet({
@@ -86,7 +91,6 @@ function Diagram() {
   const handleGoBack = useCallback(() => {
     router.back();
   }, [router]);
-  const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
 
   useEffect(() => {
     console.log(currentDataSet, "wow");
@@ -139,11 +143,12 @@ function Diagram() {
   };
   const handleRevert = async () => {
     const res = await queryRevertDataSet({
-      dataSetId: currentDataSet.dataSetID,
-      currentVersionId: editingVersionId,
+      dataSetID: currentDataSet.dataSetID,
+      versionID: editingVersionId,
     });
     if (res.data.msg === MsgType.SUCCESS) {
       message.success("revert success");
+      handleGoBack();
     } else {
       message.error(res.data.msg);
     }
