@@ -42,6 +42,15 @@ type Model = {
   unit: string;
 };
 
+type DataSetList = {
+  data: DataSetListItem[];
+}
+
+type DataSetListItem = {
+  dataSetID: string;
+  title: string;
+}
+
 interface BaseResponse<T> {
   code: number;
   msg: string;
@@ -142,4 +151,4 @@ const allModelListAtom = atomWithStorage<Model[]>('ModelList', []);
 
 export { currentUserAtom, currentDataSetAtom, allModelListAtom };
 export { AccountType };
-export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem, Model };
+export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem, Model, DataSetList };

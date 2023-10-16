@@ -16,11 +16,12 @@ import {
   notification
 } from "antd";
 import { SmileOutlined } from '@ant-design/icons';
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DescriptionsProps } from "antd";
-import { DataSet, currentDataSetAtom } from "@/store/global";
+import { DataSet, currentDataSetAtom, currentUserAtom } from "@/store/global";
 import { useAtom } from "jotai";
+import { getDataSetListByUserID } from "@/service/dataset";
 
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
@@ -195,8 +196,18 @@ const MyDataset: FC<{
       icon: <SmileOutlined style={{ color: '#108ee9' }} />,
     });
   }
-
-
+  // getDataSetListByUserID
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+  const userID = currentUser.userId;
+  useEffect(() => {
+    async function initDataSetList() {
+      const res = await getDataSetListByUserID(userID);
+      //   list: [res.data.data],
+      // }));
+      console.log(res.data.data);
+    }
+    initDataSetList();
+  },[])
   return (
     <div>
       <Row align={"middle"} justify={"start"}>
