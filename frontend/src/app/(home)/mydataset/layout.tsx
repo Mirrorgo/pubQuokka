@@ -309,7 +309,6 @@ const MyDataset: FC<{
               // )}
               renderItem={(item, index) => {
                 const hadleShare = () => {
-                  setLoading(true);
                   setTimeout(() => {
                     setOpen(false);
                     setIsModalOpen(false);
