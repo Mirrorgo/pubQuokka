@@ -70,7 +70,7 @@ const currentUserAtom = atomWithStorage<UserInfoType>(
   initialUser
 );
 
-// "0"代表新的update,
+// "0"代表支持编辑的那些情况
 const currentEditingDataSetAtom = atom<string>("0"); // 标识正在编辑的dataset,因为可能在浏览以前的datasetVersion
 // 浏览以前datasetVersion的时候只支持恢复操作，不支持直接编辑
 //

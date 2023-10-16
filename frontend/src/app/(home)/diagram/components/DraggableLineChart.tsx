@@ -13,11 +13,8 @@ interface DraggableLineChartProps {
     max: number;
     min: number;
   };
+  unit: string;
 }
-// const boundary = {
-//   max: 70,
-//   min: 5,
-// };
 
 const DraggableLineChart: FC<DraggableLineChartProps> = ({
   data,
@@ -27,6 +24,7 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
   editValue,
   setEditValue,
   boundary,
+  unit,
 }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
 
@@ -59,6 +57,7 @@ const DraggableLineChart: FC<DraggableLineChartProps> = ({
         },
         yAxis: {
           type: "value",
+          name: unit,
           // TODO: 优化到与实际值相关,因为可能会超出范围
           max: boundary.max * 1.1,
           min: Math.min(boundary.min - boundary.max * 0.1, 0),

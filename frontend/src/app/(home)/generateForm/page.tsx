@@ -17,10 +17,16 @@ import {
 } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import type { SliderMarks } from "antd/es/slider";
-import React, { FC, useState, useEffect} from "react";
+import React, { FC, useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { queryModelList } from "@/service/model";
-import { Model, allModelListAtom, DataSet, currentUserAtom } from "@/store/global";
+import {
+  Model,
+  allModelListAtom,
+  DataSet,
+  currentUserAtom,
+  currentEditingDataSetAtom,
+} from "@/store/global";
 import { createDataSetByRequirement } from "@/service/dataset";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
@@ -57,23 +63,21 @@ const GenarateForm: FC = () => {
   const onFinish = () => {
     router.push("/home");
   };
-  const [selectedValue, setSelectedValue] = useState<number>(1);
+  const [editingVersionId, setEditingVersionId] = useAtom(
+    currentEditingDataSetAtom
+  ); //读取到正在读取的版本id
+
   const onModelChange = (value: string) => {
     setDownNumber(
       Object.values(allModelList)[parseInt(value) - 1].defaultBottom
     );
-    setUpNumber(
-      Object.values(allModelList)[parseInt(value) - 1].defaultTop
-    );
+    setUpNumber(Object.values(allModelList)[parseInt(value) - 1].defaultTop);
     setModelUnit(Object.values(allModelList)[parseInt(value) - 1].unit);
     setModelType(Object.values(allModelList)[parseInt(value) - 1].modelType);
   };
 
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
-  };
-  const handleGenerateBlank = () => {
-    console.log("generate blank");
   };
 
   const onSearch = (value: string) => {
@@ -146,20 +150,20 @@ const GenarateForm: FC = () => {
       //   list: [res.data.data],
       // }));
       console.log(res.data.data);
-      const modelData: Model[] = []
-      res.data.data.forEach((item)=>{
+      const modelData: Model[] = [];
+      res.data.data.forEach((item) => {
         const top = +item.defaultTop;
         const bottom = +item.defaultBottom;
         const modelItem: Model = {
-        modelID: item.modelID,
-        modelType: item.modelType,
-        defaultTop: top,
-        defaultBottom: bottom,
-        unit: item.unit
-      }
-      modelData.push(modelItem)
-    })
-      console.log(modelData,"modeldata")
+          modelID: item.modelID,
+          modelType: item.modelType,
+          defaultTop: top,
+          defaultBottom: bottom,
+          unit: item.unit,
+        };
+        modelData.push(modelItem);
+      });
+      console.log(modelData, "modeldata");
       setAllModelList(modelData);
     }
     initModelList();
@@ -198,7 +202,7 @@ const GenarateForm: FC = () => {
 
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const Genarate = () => {
+  const generate = () => {
     async function generateModel() {
       const res = await queryModelList();
       // setAllModelList(() => ({
@@ -206,7 +210,7 @@ const GenarateForm: FC = () => {
       // }));
       setAllModelList(res.data.data as unknown as Model[]);
     }
-    const requestBody:requestForm = {
+    const requestBody: requestForm = {
       dailyStep: dailyStep,
       dataSetBottom: downNumber,
       dataSetTop: upNumber,
@@ -218,23 +222,24 @@ const GenarateForm: FC = () => {
     };
     if (modelType != "") {
       const userID = currentUser.userId;
-      const res = createDataSetByRequirement(userID,requestBody);
+      const res = createDataSetByRequirement(userID, requestBody);
       console.log(requestBody, "body");
       res.then((response) => {
         const data = response.data.data;
         console.log(data); // 这里输出包含数据的对象
         setCurrentDataSet(data as DataSet);
         console.log(currentDataSet.title);
+        generateModel();
+        setEditingVersionId("0");
+        router.push("/diagram");
       });
-      generateModel();
-      router.push("/diagram");
     } else {
       // 如果 selectedValue 为空，可以显示错误消息或采取其他操作
       console.error("Please select a value");
       openNotification();
     }
   };
-  const genarateBlank = () => {
+  const generateBlank = () => {
     async function generateModel() {
       const res = await queryModelList();
       // setAllModelList(() => ({
@@ -244,8 +249,8 @@ const GenarateForm: FC = () => {
     }
     const requestBody = {
       dailyStep: dailyStep,
-      datasetBottom: downNumber,
-      datasetTop: upNumber,
+      dataSetBottom: downNumber,
+      dataSetTop: upNumber,
       modelType: modelType,
       numPoints: pointNumber,
       timeEnd: timeRange[0],
@@ -254,7 +259,7 @@ const GenarateForm: FC = () => {
     };
     if (modelType != "") {
       const userId = currentUser.userId;
-      const res = createDataSetByRequirement(userId,requestBody);
+      const res = createDataSetByRequirement(userId, requestBody);
 
       console.log(requestBody, "body");
       res.then((response) => {
@@ -263,9 +268,10 @@ const GenarateForm: FC = () => {
         data.dataSetData = [];
         setCurrentDataSet(data as DataSet);
         console.log(currentDataSet.dataSetData, "aaa");
+        generateModel();
+        setEditingVersionId("0");
+        router.push("/diagram");
       });
-      generateModel();
-      router.push("/diagram");
     } else {
       // 如果 selectedValue 为空，可以显示错误消息或采取其他操作
       console.error("Please select a value");
@@ -345,7 +351,7 @@ const GenarateForm: FC = () => {
                     prefix="From: "
                     value={downNumber}
                     onChange={handleDownNumberChange}
-                    max={(upNumber-1)}
+                    max={upNumber - 1}
                   ></InputNumber>
                   <a>～</a>
                   <InputNumber
@@ -353,7 +359,7 @@ const GenarateForm: FC = () => {
                     addonAfter={modelUnit}
                     value={upNumber}
                     onChange={handleUpNumberChange}
-                    min={(downNumber+1)}
+                    min={downNumber + 1}
                   ></InputNumber>
                 </Col>
                 {/* <Col span={20}>
@@ -446,7 +452,7 @@ const GenarateForm: FC = () => {
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
-                  onClick={Genarate}
+                  onClick={generate}
                 >
                   Generate
                 </Button>
@@ -457,7 +463,7 @@ const GenarateForm: FC = () => {
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
-                  onClick={genarateBlank}
+                  onClick={generateBlank}
                 >
                   Generate Blank
                 </Button>
