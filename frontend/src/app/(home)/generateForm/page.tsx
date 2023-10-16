@@ -60,10 +60,10 @@ const GenarateForm: FC = () => {
   const [selectedValue, setSelectedValue] = useState<number>(1);
   const onModelChange = (value: string) => {
     setDownNumber(
-      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultBottom)
+      Object.values(allModelList)[parseInt(value) - 1].defaultBottom
     );
     setUpNumber(
-      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultTop)
+      Object.values(allModelList)[parseInt(value) - 1].defaultTop
     );
     setModelUnit(Object.values(allModelList)[parseInt(value) - 1].unit);
     setModelType(Object.values(allModelList)[parseInt(value) - 1].modelType);
@@ -80,9 +80,9 @@ const GenarateForm: FC = () => {
     console.log("search:", value);
   };
 
-  const [downNumber, setDownNumber] = useState(1);
-  const [upNumber, setUpNumber] = useState(2);
-  const [pointNumber, setPointNumber] = useState(0);
+  const [downNumber, setDownNumber] = useState("1");
+  const [upNumber, setUpNumber] = useState("2");
+  const [pointNumber, setPointNumber] = useState("0");
   const [modelUnit, setModelUnit] = useState("%");
   const [dailyStep, setDailyStep] = useState(
     dayjs("2023/09/07", "HH:mm:ss").format("HH:mm:ss")
@@ -93,20 +93,20 @@ const GenarateForm: FC = () => {
     "2023/09/07",
     "2023/09/08",
   ]);
-  const handleDownNumberChange = (value: number | null) => {
-    if (value !== null && value < upNumber) {
+  const handleDownNumberChange = (value: string | null) => {
+    if (value !== null && parseInt(value) < parseInt(upNumber)) {
       setDownNumber(value);
     }
   };
 
-  const handleUpNumberChange = (value: number | null) => {
-    if (value !== null && value > downNumber) {
+  const handleUpNumberChange = (value: string | null) => {
+    if (value !== null && parseInt(value) > parseInt(downNumber)) {
       setUpNumber(value);
     }
   };
 
-  const handlePointNumberChange = (value: number | null) => {
-    if (value !== null && value > downNumber) {
+  const handlePointNumberChange = (value: string | null) => {
+    if (value !== null) {
       setPointNumber(value);
     }
   };
@@ -228,8 +228,8 @@ const GenarateForm: FC = () => {
     }
     const requestBody = {
       dailyStep: dailyStep,
-      datasetBottom: downNumber.toString(),
-      datasetTop: upNumber.toString(),
+      datasetBottom: downNumber,
+      datasetTop: upNumber,
       modelType: modelType,
       numPoints: pointNumber,
       timeEnd: timeRange[0],
@@ -328,7 +328,7 @@ const GenarateForm: FC = () => {
                     prefix="From: "
                     value={downNumber}
                     onChange={handleDownNumberChange}
-                    max={upNumber - 1}
+                    max={""+(parseInt(upNumber) - 1)}
                   ></InputNumber>
                   <a>～</a>
                   <InputNumber
