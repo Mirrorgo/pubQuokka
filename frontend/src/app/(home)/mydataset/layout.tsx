@@ -89,7 +89,7 @@ const MyDataset: FC<{
 }) => {
     const router = useRouter();
     const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom); // 仅临时使用，正常应该第一次打开不显示，点击后显示。如果点击0则显示0
-    const [currentVersion, setCurremtVersion] = useAtom(currentEditingDataSetAtom)
+    const [currentVersion, setCurrentVersion] = useAtom(currentEditingDataSetAtom)
     const [open, setOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -145,7 +145,7 @@ const MyDataset: FC<{
       };
 
       const showHistoryVersion = (versionID: string) => {
-        setCurremtVersion(versionID);
+        setCurrentVersion(versionID);
         setCurrentDataSet(historyDataSet as DataSet);
         router.push("/diagram")
       }
