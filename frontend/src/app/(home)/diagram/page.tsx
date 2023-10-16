@@ -65,7 +65,7 @@ function Diagram() {
   const handleUpdateDataSet = async () => {
     const res = await queryUpdateDataSet({
       // dataSetId: currentDataSet.dataSetId,
-      dataSetID: "847ea019-f66c-4cfa-a01b-6c5ed51246cf",
+      dataSetID: "61b71025-d49d-4745-86ac-7272eb7bbcf1",
       data: convertTwoDimensionalArrayToDataObject(chartData),
       title: title,
     });
@@ -102,7 +102,7 @@ function Diagram() {
     async function initDataSet() {
       console.log("2");
       const res = await queryDataSetById({
-        dataSetID: "847ea019-f66c-4cfa-a01b-6c5ed51246cf",
+        dataSetID: "61b71025-d49d-4745-86ac-7272eb7bbcf1",
       });
       console.log(res.data.data, "1");
       if (res.data.msg === MsgType.SUCCESS) {
