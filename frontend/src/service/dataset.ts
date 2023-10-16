@@ -19,9 +19,9 @@ export async function queryRevertDataSet(data: object) {
   );
 }
 
-export async function createDataSetByRequirement(data: object) {
+export async function createDataSetByRequirement(userID: string, requestBody: Object) {
   return axios.post<BaseResponse<DataSet>>(
-    requestUrl("/dataSet/generate",true),
-    data
+    requestUrl(`/dataSet/generate?userID=${userID}`,true),
+    requestBody
   )
 }

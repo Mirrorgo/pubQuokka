@@ -17,10 +17,10 @@ import {
 } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import type { SliderMarks } from "antd/es/slider";
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect} from "react";
 import dayjs from "dayjs";
 import { queryModelList } from "@/service/model";
-import { Model, allModelListAtom, DataSet } from "@/store/global";
+import { Model, allModelListAtom, DataSet, currentUserAtom } from "@/store/global";
 import { createDataSetByRequirement } from "@/service/dataset";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
@@ -60,10 +60,10 @@ const GenarateForm: FC = () => {
   const [selectedValue, setSelectedValue] = useState<number>(1);
   const onModelChange = (value: string) => {
     setDownNumber(
-      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultDown)
+      Object.values(allModelList)[parseInt(value) - 1].defaultBottom
     );
     setUpNumber(
-      parseInt(Object.values(allModelList)[parseInt(value) - 1].defaultUp)
+      Object.values(allModelList)[parseInt(value) - 1].defaultTop
     );
     setModelUnit(Object.values(allModelList)[parseInt(value) - 1].unit);
     setModelType(Object.values(allModelList)[parseInt(value) - 1].modelType);
@@ -84,7 +84,9 @@ const GenarateForm: FC = () => {
   const [upNumber, setUpNumber] = useState(2);
   const [pointNumber, setPointNumber] = useState(0);
   const [modelUnit, setModelUnit] = useState("%");
-  const [dailyStep, setDailyStep] = useState(dayjs("2023/09/07", dateFormat));
+  const [dailyStep, setDailyStep] = useState(
+    dayjs("2023/09/07", "HH:mm:ss").format("HH:mm:ss")
+  );
   const [modelType, setModelType] = useState("");
   const [trend, setTrend] = useState("Up");
   const [timeRange, setTimeRange] = useState<string[] | string>([
@@ -104,7 +106,7 @@ const GenarateForm: FC = () => {
   };
 
   const handlePointNumberChange = (value: number | null) => {
-    if (value !== null && value > downNumber) {
+    if (value !== null) {
       setPointNumber(value);
     }
   };
@@ -144,7 +146,21 @@ const GenarateForm: FC = () => {
       //   list: [res.data.data],
       // }));
       console.log(res.data.data);
-      setAllModelList(res.data.data as unknown as Model[]);
+      const modelData: Model[] = []
+      res.data.data.forEach((item)=>{
+        const top = +item.defaultTop;
+        const bottom = +item.defaultBottom;
+        const modelItem: Model = {
+        modelID: item.modelID,
+        modelType: item.modelType,
+        defaultTop: top,
+        defaultBottom: bottom,
+        unit: item.unit
+      }
+      modelData.push(modelItem)
+    })
+      console.log(modelData,"modeldata")
+      setAllModelList(modelData);
     }
     initModelList();
   }, [setAllModelList]);
@@ -159,18 +175,29 @@ const GenarateForm: FC = () => {
     label: options.modelType,
   }));
 
-  const requestForm = {
-    dailyStep: dailyStep,
-    datasetBottom: downNumber.toString(),
-    datasetTop: upNumber.toString(),
-    modelType: modelType,
-    numPoints: pointNumber,
-    timeEnd: timeRange[0],
-    timeStart: timeRange[1],
-    trend: trend,
+  type requestForm = {
+    // dailyStep: dailyStep,
+    // datasetBottom: downNumber.toString(),
+    // datasetTop: upNumber.toString(),
+    // modelType: modelType,
+    // numPoints: pointNumber,
+    // timeEnd: timeRange[0],
+    // timeStart: timeRange[1],
+    // trend: trend,
+    dailyStep: string;
+    dataSetBottom: number;
+    dataSetTop: number;
+    modelType: string;
+    numPoints: number;
+    timeEnd: string;
+    timeStart: string;
+    trend: string;
   };
 
+  // const [req, setReq] = useState<requestForm>();
+
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const Genarate = () => {
     async function generateModel() {
       const res = await queryModelList();
@@ -179,9 +206,20 @@ const GenarateForm: FC = () => {
       // }));
       setAllModelList(res.data.data as unknown as Model[]);
     }
+    const requestBody:requestForm = {
+      dailyStep: dailyStep,
+      dataSetBottom: downNumber,
+      dataSetTop: upNumber,
+      modelType: modelType,
+      numPoints: pointNumber,
+      timeEnd: timeRange[1],
+      timeStart: timeRange[0],
+      trend: trend,
+    };
     if (modelType != "") {
-      const res = createDataSetByRequirement(requestForm);
-      console.log(res);
+      const userID = currentUser.userId;
+      const res = createDataSetByRequirement(userID,requestBody);
+      console.log(requestBody, "body");
       res.then((response) => {
         const data = response.data.data;
         console.log(data); // 这里输出包含数据的对象
@@ -204,9 +242,21 @@ const GenarateForm: FC = () => {
       // }));
       setAllModelList(res.data.data as unknown as Model[]);
     }
+    const requestBody = {
+      dailyStep: dailyStep,
+      datasetBottom: downNumber,
+      datasetTop: upNumber,
+      modelType: modelType,
+      numPoints: pointNumber,
+      timeEnd: timeRange[0],
+      timeStart: timeRange[1],
+      trend: trend,
+    };
     if (modelType != "") {
-      const res = createDataSetByRequirement(requestForm);
-      console.log(res);
+      const userId = currentUser.userId;
+      const res = createDataSetByRequirement(userId,requestBody);
+
+      console.log(requestBody, "body");
       res.then((response) => {
         const data: DataSet = response.data.data;
         console.log(data); // 这里输出包含数据的对象
@@ -295,7 +345,7 @@ const GenarateForm: FC = () => {
                     prefix="From: "
                     value={downNumber}
                     onChange={handleDownNumberChange}
-                    max={upNumber - 1}
+                    max={(upNumber-1)}
                   ></InputNumber>
                   <a>～</a>
                   <InputNumber
@@ -303,7 +353,7 @@ const GenarateForm: FC = () => {
                     addonAfter={modelUnit}
                     value={upNumber}
                     onChange={handleUpNumberChange}
-                    min={downNumber + 1}
+                    min={(downNumber+1)}
                   ></InputNumber>
                 </Col>
                 {/* <Col span={20}>
@@ -362,7 +412,7 @@ const GenarateForm: FC = () => {
                     <Form.Item label="Step:">
                       <TimePicker
                         defaultValue={dayjs("12:08:23", "HH:mm:ss")}
-                        value={dailyStep}
+                        value={dayjs(dailyStep, "HH:mm:ss")}
                         onChange={changeDailyStep}
                       />
                     </Form.Item>
