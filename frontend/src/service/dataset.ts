@@ -3,15 +3,18 @@ import { requestUrl } from "./requestUtils";
 import axios from "axios";
 
 export async function queryUpdateDataSet(data: object) {
-  return axios.post<BaseResponse<string>>(
-    requestUrl("/dataSet/modify1", true),
-    data
-  );
+  return axios.post<BaseResponse<string>>(requestUrl("/dataSet/modify"), data);
 }
 
-export async function queryDataSetById(data: object) {
+export async function queryDataSetById(params: object) {
+  return axios.get<BaseResponse<DataSet>>(requestUrl("/dataSet/get"), {
+    params,
+  });
+}
+
+export async function queryRevertDataSet(data: object) {
   return axios.get<BaseResponse<DataSet>>(
-    requestUrl("/dataset/get", true),
+    requestUrl("/dataSet/revert", true),
     data
   );
 }

@@ -22,7 +22,7 @@ const Login: FC = () => {
       const res = await login(values);
       if (res.data.msg === MsgType.SUCCESS) {
         setCurrentUser(res.data.data);
-        router.push("/dashboard");
+        router.push("/generateForm");
       } else if (res.data.msg === MsgType.FAILURE) {
         message.error("invalid username or password");
       } else {
@@ -87,9 +87,12 @@ const Login: FC = () => {
               </Form.Item>
               {!isLogin && (
                 <>
-                  <Form.Item name="role" label="Account Type">
+                  <Form.Item
+                    name="role"
+                    label="Account Type"
+                    initialValue={AccountType.Individual}
+                  >
                     <Select
-                      defaultValue={AccountType.Individual}
                       options={[
                         { value: AccountType.Individual, label: "Individual" },
                         {

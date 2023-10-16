@@ -37,3 +37,20 @@ export async function queryDeleteMember(data: object) {
     data
   );
 }
+
+export async function queryIndividualsWithoutOrganization() {
+  return axios.get<BaseResponse<{ userId: string; username: string }[]>>(
+    requestUrl("/user/individualsWithoutOrganization/list")
+  );
+}
+
+export async function queryInviteIndividualToOrganization(data: object) {
+  return axios.post<BaseResponse<string>>(requestUrl("/user/invite"), data);
+}
+
+export async function queryUsersByOrganization(params: object) {
+  return axios.get<BaseResponse<{ userId: string; username: string }[]>>(
+    requestUrl("/user/findUserByOrganization"),
+    { params }
+  );
+}

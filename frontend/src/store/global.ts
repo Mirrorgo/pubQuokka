@@ -1,5 +1,5 @@
-import { atom,useAtom } from "jotai";
-import { atomWithStorage  } from "jotai/utils";
+import { atom, useAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
 enum AccountType {
   Individual = "individual",
@@ -15,8 +15,8 @@ type UserInfoType = {
 };
 
 type DataSet = {
-  dataSetData: DataElement[];
-  dataSetId: string;
+  dataSetData: DataElement[] | [];
+  dataSetID: string;
   defaultBottom: string;
   defaultTop: string;
   modelType: string;
@@ -69,7 +69,8 @@ const currentUserAtom = atomWithStorage<UserInfoType>(
   initialUser
 );
 
-const currentEditingDataSetAtom = atom("0"); // 标识正在编辑的dataset,因为可能在浏览以前的datasetVersion
+// "0"代表新的update,
+const currentEditingDataSetAtom = atom<string>("0"); // 标识正在编辑的dataset,因为可能在浏览以前的datasetVersion
 // 浏览以前datasetVersion的时候只支持恢复操作，不支持直接编辑
 //
 
@@ -117,7 +118,7 @@ const currentEditingDataSetAtom = atom("0"); // 标识正在编辑的dataset,因
 // };
 
 const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
-  dataSetId: "1",
+  dataSetID: "1",
   title: "test1",
   modelType: "",
   defaultTop: "",
@@ -129,7 +130,7 @@ const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
       createdTime: "1998-08-26 17:27:53",
       dataSet: [
         {
-          x: "2014-07-29 18:25:47",
+          x: "1617258260000",
           y: "20",
         },
       ],
@@ -144,11 +145,24 @@ const currentDataSetAtom = atomWithStorage<DataSet>("currentDataSet", {
 //   defaultDown: "",
 //   unit: ""
 // });
-const allModelListAtom = atomWithStorage<Model[]>('ModelList', []);
+const allModelListAtom = atomWithStorage<Model[]>("ModelList", []);
 
-
-
-
-export { currentUserAtom, currentDataSetAtom, allModelListAtom };
+export {
+  currentUserAtom,
+  currentDataSetAtom,
+  allModelListAtom,
+  currentEditingDataSetAtom,
+};
 export { AccountType };
+<<<<<<< HEAD
 export type { BaseResponse, DataSet, UserInfoType, DataElement, DataItem, Model, DataSetList };
+=======
+export type {
+  BaseResponse,
+  DataSet,
+  UserInfoType,
+  DataElement,
+  DataItem,
+  Model,
+};
+>>>>>>> frontend/sprint3

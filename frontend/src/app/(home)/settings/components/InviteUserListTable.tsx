@@ -1,5 +1,12 @@
-import { Space, Table } from "antd";
-import React from "react";
+import { MsgType } from "@/service/requestType";
+import {
+  queryIndividualsWithoutOrganization,
+  queryInviteIndividualToOrganization,
+} from "@/service/user";
+import { currentDataSetAtom, currentUserAtom } from "@/store/global";
+import { Space, Table, message } from "antd";
+import { useAtom } from "jotai";
+import React, { useEffect, useState } from "react";
 
 type UserItem = {
   userId: string;
@@ -8,22 +15,36 @@ type UserItem = {
 const username = "username";
 
 function InviteUserListTable() {
-  const handleInvite = (record: UserItem) => {
-    console.log("record", record);
+  const [currentUser] = useAtom(currentUserAtom);
+  const handleInvite = async (record: UserItem) => {
+    console.log("record", record, currentUser.organizationId);
+    const res = await queryInviteIndividualToOrganization({
+      userId: record.userId,
+      organizationId: currentUser.organizationId,
+    });
+    if (res.data.msg === MsgType.SUCCESS) {
+      message.success("invite success");
+    } else {
+      message.error(res.data.data);
+    }
   };
-  const dataSource = [
-    {
-      userId: "1",
-      username: "111",
-    },
-  ];
+  useEffect(() => {
+    // 通过destroy on close来实现每次打开重新请求
+    async function fetch() {
+      const res = await queryIndividualsWithoutOrganization();
+      if (res.data.msg === MsgType.SUCCESS) {
+        setDataSource(res.data.data);
+      }
+      console.log(res.data.data);
+    }
+
+    fetch();
+  }, []);
+  const [dataSource, setDataSource] = useState<
+    { userId: string; username: string }[]
+  >([]);
 
   const columns = [
-    {
-      title: "userId",
-      dataIndex: "userId",
-      key: "userId",
-    },
     {
       title: username,
       dataIndex: username,
@@ -40,7 +61,13 @@ function InviteUserListTable() {
     },
   ];
 
-  return <Table dataSource={dataSource} columns={columns} />;
+  return (
+    <Table
+      dataSource={dataSource}
+      columns={columns}
+      pagination={{ pageSize: 5 }}
+    />
+  );
 }
 
 export default InviteUserListTable;

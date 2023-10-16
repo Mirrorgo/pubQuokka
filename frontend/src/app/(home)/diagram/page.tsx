@@ -14,9 +14,23 @@ import {
 } from "antd";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
-import { currentDataSetAtom } from "@/store/global";
+import {
+  DataSet,
+  currentDataSetAtom,
+  currentEditingDataSetAtom,
+} from "@/store/global";
 // import { getCurrentVersionDataFromDataSet } from "@/utils/dataset";
-import { queryDataSetById, queryUpdateDataSet } from "@/service/dataset";
+import {
+  queryDataSetById,
+  queryRevertDataSet,
+  queryUpdateDataSet,
+} from "@/service/dataset";
+import { MsgType } from "@/service/requestType";
+import {
+  convertDataToObjectToTwoDimensionalArray,
+  convertTwoDimensionalArrayToDataObject,
+} from "@/utils/dataset";
+import TimestampDatePicker from "./components/TimestampDatePicker";
 // import Title from "antd/es/typography/Title";
 // import Title from "antd/es/skeleton/Title";
 const { Title, Paragraph, Text, Link } = Typography;
@@ -29,19 +43,49 @@ enum ActionType {
 
 function Diagram() {
   const router = useRouter();
-  const [messageApi, contextHolder] = message.useMessage();
-  const [chartData, setChartData] = useState<number[][]>([[]]);
+  const [chartData, setChartData] = useState<number[][]>([[]]); // all图表上的数据点
   const [editingDataIndex, setEditingDataIndex] = useState<number | null>(null);
-  const [editValue, setEditValue] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState<number | null>(null); //edit point的时候y的值
   const [actionType, setActionType] = useState<ActionType>(ActionType.Empty);
+  // addpoint
   const [addPointX, setAddPointX] = useState<number>(0);
   const [addPointY, setAddPointY] = useState<number>(0);
+  const [editingVersionId] = useAtom(currentEditingDataSetAtom); //读取到正在读取的版本id
+  // view只能revert
+  const [status, setStatus] = useState<"view" | "edit">("view");
+  const [title, setTitle] = useState("");
+  const [boundary, setBoundary] = useState({
+    max: 0,
+    min: 0,
+  });
+
+  useEffect(() => {
+    if (editingVersionId === "0") {
+      setStatus("edit");
+    } else {
+      setStatus("view");
+    }
+  }, [editingVersionId]);
 
   const handleUpdateDataSet = async () => {
-    // const res  = await queryUpdateDataSet()
+    console.log("?", currentDataSet.dataSetID, currentDataSet);
+    const res = await queryUpdateDataSet({
+      // dataSetId: currentDataSet.dataSetId,
+      dataSetID: currentDataSet.dataSetID,
+      dataSet: convertTwoDimensionalArrayToDataObject(chartData),
+      title: title,
+    });
+    if (res.data.msg === MsgType.SUCCESS) {
+      // console.log("ooo", res.data.data);
+      message.success("update dataset successfully");
+      // handleGoBack();
+    } else {
+      message.error(res.data.msg);
+    }
+    console.log("dataset", chartData, title);
   };
   const handleGoBack = useCallback(() => {
-    router.push("/generateForm");
+    router.back();
   }, [router]);
   const [currentDataSet, setCurrentDataSet] = useAtom(currentDataSetAtom);
   // init Chart data
@@ -63,16 +107,36 @@ function Diagram() {
 
   // TODO 临时的初始化dataset方法
   useEffect(() => {
+    console.log(currentDataSet, "wow");
     async function initDataSet() {
-      const res = await queryDataSetById({ datasetId: "1" });
-      console.log(res.data.data, "1");
+      // console.log("2");
+      // const res = await queryDataSetById({
+      //   dataSetID: "61b71025-d49d-4745-86ac-7272eb7bbcf1",
+      // });
+      // console.log(res.data.data, "1");
+
+      const init = (data: DataSet) => {
+        setCurrentDataSet(data);
+        const initData = data;
+        const datas = initData.dataSetData;
+        const { length } = datas;
+        const newChartData = convertDataToObjectToTwoDimensionalArray(
+          datas[length - 1].dataSet
+        ).sort((a, b) => a[0] - b[0]);
+        setTitle(data.title);
+        setChartData(newChartData);
+        setBoundary({
+          max: +initData.defaultTop,
+          min: +initData.defaultBottom,
+        });
+      };
+      init(currentDataSet);
+      // if (res.data.msg === MsgType.SUCCESS) {
+      //   init(res.data.data);
+      // }
     }
     initDataSet();
   }, []);
-
-  const handleGenerateJson = useCallback(() => {
-    messageApi.success("Json has been generated and sent!");
-  }, [messageApi]);
 
   const handleSave = () => {
     if (editingDataIndex !== null && editValue !== null) {
@@ -83,6 +147,22 @@ function Diagram() {
       setChartData(newData);
     }
   };
+
+  const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+  const handleRevert = async () => {
+    const res = await queryRevertDataSet({
+      dataSetId: currentDataSet.dataSetID,
+      currentVersionId: editingVersionId,
+    });
+    if (res.data.msg === MsgType.SUCCESS) {
+      message.success("revert success");
+    } else {
+      message.error(res.data.msg);
+    }
+  };
+
   const handleDelete = () => {
     if (editingDataIndex !== null) {
       const newData = [...chartData];
@@ -108,6 +188,7 @@ function Diagram() {
       }
     }
     newData.splice(insertIndex, 0, [addPointX, addPointY]);
+    console.log("look", newData);
     setAddPointX(0);
     setAddPointY(0);
     setChartData(newData);
@@ -115,10 +196,16 @@ function Diagram() {
 
   return (
     <>
-      {contextHolder}
-      <Button type="primary" onClick={handleGoBack}>
-        Back
-      </Button>
+      <Space size="large">
+        <Button type="primary" onClick={handleGoBack}>
+          Back
+        </Button>
+        <Input
+          style={{ width: "30vw" }}
+          value={title}
+          onChange={handleChangeTitle}
+        />
+      </Space>
       <Row style={{ width: "100vw", height: "500px" }}>
         <Col span={18}>
           <DraggableLineChart
@@ -128,6 +215,7 @@ function Diagram() {
             setEditingDataIndex={setEditingDataIndex}
             editValue={editValue}
             setEditValue={setEditValue}
+            boundary={boundary}
           />
         </Col>
         <Col span={6}>
@@ -149,57 +237,71 @@ function Diagram() {
             </div>
           ))} */}
 
-          <Button>Revert</Button>
-          <Card style={{ width: "100%", height: "100%" }}>
-            <Space direction="vertical">
-              <Title level={3}>Edit Panel</Title>
-              {editingDataIndex !== null && (
-                <Space direction="vertical">
-                  <Input
-                    addonBefore="y:"
-                    type="number"
-                    value={editValue === null ? "" : editValue}
-                    onChange={(e) => setEditValue(parseFloat(e.target.value))}
-                  />
-                  <Space>
-                    <Button onClick={handleSave} type="primary">
-                      Save
-                    </Button>
-                    <Button onClick={handleDelete} type="default">
-                      Delete
-                    </Button>
+          {status === "edit" ? (
+            <Card style={{ width: "100%", height: "100%" }}>
+              <Space direction="vertical">
+                <Title level={3}>Edit Panel</Title>
+                {editingDataIndex !== null && (
+                  <Space direction="vertical">
+                    <Input
+                      addonBefore="y:"
+                      type="number"
+                      value={editValue === null ? "" : editValue}
+                      onChange={(e) => setEditValue(parseFloat(e.target.value))}
+                    />
+                    <Space>
+                      <Button onClick={handleSave} type="primary">
+                        Save
+                      </Button>
+                      <Button onClick={handleDelete} type="default">
+                        Delete
+                      </Button>
+                    </Space>
                   </Space>
-                </Space>
-              )}
-              <Divider />
-              <Title level={5}>New Point</Title>
-              <Input
-                addonBefore="x:"
-                type="number"
-                placeholder="x"
-                value={addPointX}
-                onChange={(cur) => setAddPointX(+cur.target.value)}
-              />
-              <Input
-                addonBefore="y:"
-                placeholder="y"
-                type="number"
-                value={addPointY}
-                onChange={(cur) => setAddPointY(+cur.target.value)}
-              />
-              <Button
-                // onClick={() => setActionType(ActionType.Add)}
-                onClick={handleAddPoint}
-                type="primary"
-              >
-                Add Point
-              </Button>
-              <div style={{ height: "30vh" }} />
-            </Space>
-          </Card>
-          {/* <Button type="primary" onClick={handleGenerateJson}>
-            Generate json
-          </Button> */}
+                )}
+                <Divider />
+                <Title level={5}>New Point</Title>
+                <Row gutter={[8, 0]} align="middle">
+                  <Col>
+                    <span>x:</span>
+                  </Col>
+                  <Col flex="auto">
+                    {/* <Input
+                      type="number"
+                      placeholder="x"
+                      value={addPointX}
+                      onChange={(e) => setAddPointX(+e.target.value)}
+                    /> */}
+                    <TimestampDatePicker setPoint={setAddPointX} />
+                  </Col>
+                </Row>
+
+                <Row gutter={[8, 0]} align="middle">
+                  <Col>
+                    <span>y:</span>
+                  </Col>
+                  <Col flex="auto">
+                    <Input
+                      placeholder="y"
+                      type="number"
+                      value={addPointY}
+                      onChange={(e) => setAddPointY(+e.target.value)}
+                    />
+                  </Col>
+                </Row>
+                <Button
+                  // onClick={() => setActionType(ActionType.Add)}
+                  onClick={handleAddPoint}
+                  type="primary"
+                >
+                  Add Point
+                </Button>
+                <div style={{ height: "30vh" }} />
+              </Space>
+            </Card>
+          ) : (
+            <Button onClick={handleRevert}>Revert</Button>
+          )}
         </Col>
       </Row>
       <Row justify="center">
